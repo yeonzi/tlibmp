@@ -175,8 +175,17 @@ tlb_image_t * tlb_load_bmp(const char *file_name)
     }
 
     /* unsupported compression method */
-    if(dib_info.biCompression != COMPRESS_BI_RGB){
+    if(dib_info.biCompression != COMPRESS_BI_RGB &&\
+       dib_info.biCompression != COMPRESS_BI_BITFIELDS){
         fprintf(stderr, "Unsupported Format: Can not parse %s compression method.\n", get_bmp_comp_string(dib_info.biCompression));
+        goto destory;
+    }
+
+    /* unsupported compression method */
+    /* COMPRESS_BI_BITFIELDS marked, but color depth is not 4 */
+    /* this will appear when use Huffman 1D */
+    if(dib_info.biCompression == COMPRESS_BI_BITFIELDS && color_depth != 4){
+        fprintf(stderr, "Unsupported Format: Can not parse with Huffman 1D.\n");
         goto destory;
     }
 
