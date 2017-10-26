@@ -557,7 +557,7 @@ tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel)
 
     uint32_t cnt_max = 0;
 
-    for (i = channel; i < size; i += CHANNEL_CNT){
+    for (i = channel; i < 4 * size; i += CHANNEL_CNT){
         summary[image->data[i]]++;
     }
 
@@ -600,7 +600,7 @@ tlb_image_t * tlb_img_histogram(tlb_image_t * image)
 
         uint32_t cnt_max = 0;
 
-        for (i = channel; i < size; i += CHANNEL_CNT){
+        for (i = channel; i < 4 * size; i += CHANNEL_CNT){
             summary[image->data[i]]++;
         }
 
