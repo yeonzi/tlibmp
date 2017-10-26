@@ -18,10 +18,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ********************************************************************************/
 
-#ifndef _TLIBMP_H_
-#define _TLIBMP_H_ 1
+#ifndef TLIBMP_H
+#define TLIBMP_H 1
 
-#define _TLIBMP_VER_ "0.0.1"
+#define TLIBMP_VER "0.0.1"
 
 #include <stdint.h>
 
