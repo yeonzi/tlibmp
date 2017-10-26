@@ -453,6 +453,49 @@ tlb_image_t * tlb_img_copy(tlb_image_t * src_image)
     return image;
 }
 
+/*******************/
+/* pixel operation */
+/*******************/
+/* get a array of the pixel */
+uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y){
+    /* Check the input legitimacy */
+    if(x > image->width){
+        x = image->width;
+    }
+    if(y > image->height){
+        y = image->height;
+    }
+    return (image->data + 4*(y * image->width + x));
+}
+
+/* print a pixel with specific color */
+int tlp_print_pixel(tlb_image_t * image, uint32_t x, uint32_t y, uint32_t color){
+    if(x > image->width){
+        return TLB_ERROR;
+    }
+    if(y > image->height){
+        return TLB_ERROR;
+    }
+    *(uint32_t*)(image->data + 4*(y * image->width + x)) = color;
+    return TLB_OK;
+}
+
+/* print a pixel with specific color */
+int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val){
+    if(x > image->width){
+        return TLB_ERROR;
+    }
+    if(y > image->height){
+        return TLB_ERROR;
+    }
+    (image->data + 4*(y * image->width + x))[channel] = val;
+    return TLB_OK;
+}
+
+/*******************/
+/* image operation */
+/*******************/
+
 int tlb_img_inverse(tlb_image_t * image)
 {
     uint32_t size;
@@ -573,10 +616,9 @@ tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel)
 
     for(i = 0; i < 256; i++){
         for(j = summary[i]; j>=0; j--){
-            tlb_pixel(histogram, j, i, channel) = 0xFF;
+            tlp_print_pixel_ch(histogram, i, j, channel, 0xFF);
         }
     }
-
     return histogram;
 }
 
@@ -615,10 +657,10 @@ tlb_image_t * tlb_img_histogram(tlb_image_t * image)
 
         for(i = 0; i < 256; i++){
             for(j = summary[i]; j>=0; j--){
-                tlb_pixel(histogram, j, (2*i), channel) = 0x00;
+                tlp_print_pixel_ch(histogram, (2*i), j, channel, 0x00);
             }
             for(j = summary[i]; j>=0; j--){
-                tlb_pixel(histogram, j, (2*i+1), channel) = 0x00;
+                tlp_print_pixel_ch(histogram, (2*i)+1, j, channel, 0x00);
             }
         }
     }

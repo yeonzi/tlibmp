@@ -36,9 +36,9 @@ int main(void)
     printf("BMP Loaded\n");
 
     printf("First pixel color: #%02X%02X%02X\n",\
-        tlb_pixel(origin, 0, 0, CHANNEL_R),\
-        tlb_pixel(origin, 0, 0, CHANNEL_G),\
-        tlb_pixel(origin, 0, 0, CHANNEL_B));
+        tlb_pixel(origin, 0, 0)[CHANNEL_R],\
+        tlb_pixel(origin, 0, 0)[CHANNEL_G],\
+        tlb_pixel(origin, 0, 0)[CHANNEL_B]);
 
     image = tlb_img_copy(origin);
     tlb_img_inverse(image);

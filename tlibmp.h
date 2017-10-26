@@ -99,7 +99,6 @@ typedef struct {
     uint8_t  *data;             /* Data format: [RGBA]    */
 }tlb_image_t;
 
-#define tlb_pixel(image, x, y, ch)  ((image->data + 4*(x * image->width + y))[ch])
 #define tlb_rgb(R,G,B)              (uint32_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16))
 #define tlb_rgba(R,G,B,A)           (uint32_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16)+((uint8_t)A<<24))
 
@@ -113,6 +112,19 @@ int tlb_save_bmp(const char *file_name, tlb_image_t * image);
 
 /* print basic info of a bmp file */
 int tlb_print_bmp_info(const char *file_name);
+
+/* pixel operation APIs */
+
+/* #define tlb_pixel(image, x, y, ch)  ((image->data + 4*(x * image->width + y))[ch]) */
+
+/* get a array of the pixel */
+uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y);
+
+/* print a pixel with specific color */
+int tlp_print_pixel(tlb_image_t * image, uint32_t x, uint32_t y, uint32_t color);
+
+/* print a pixel with specific color */
+int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val);
 
 /* Image operation APIs */
 
