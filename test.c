@@ -71,5 +71,25 @@ int main(void)
     tlb_save_bmp("./out_histogram_b.bmp", image);
     tlb_img_free(image);
 
+    image = tlb_img_channel(origin,CHANNEL_R);
+    tlb_save_bmp("./out_channel_r.bmp", image);
+    tlb_img_free(image);
+
+    image = tlb_img_channel(origin,CHANNEL_G);
+    tlb_save_bmp("./out_channel_g.bmp", image);
+    tlb_img_free(image);
+
+    image = tlb_img_channel(origin,CHANNEL_B);
+    tlb_save_bmp("./out_channel_b.bmp", image);
+    tlb_img_free(image);
+
+    image = tlb_img_mosaic(origin,10);
+    tlb_save_bmp("./out_mosaic.bmp", image);
+    tlb_img_free(image);
+
+    image = tlb_block_mosaic(origin, 350, 250, 370, 250, 10);
+    tlb_save_bmp("./out_block_mosaic.bmp", image);
+    tlb_img_free(image);
+
     return 0;
 }

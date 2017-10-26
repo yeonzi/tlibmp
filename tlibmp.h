@@ -146,5 +146,10 @@ int tlb_img_color_replace(tlb_image_t * image, uint32_t find, uint32_t replace);
 tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel);
 tlb_image_t * tlb_img_histogram(tlb_image_t * image);
 
+tlb_image_t * tlb_img_channel(tlb_image_t * image, uint8_t channel);
+
+tlb_image_t * tlb_img_mosaic(tlb_image_t * image, uint32_t granularity);
+tlb_image_t * tlb_block_mosaic(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y, uint32_t granularity);
+
 
 #endif

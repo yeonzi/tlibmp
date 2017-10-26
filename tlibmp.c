@@ -62,38 +62,38 @@ SOFTWARE.
 
 #define s_free(ptr)  if(ptr!=NULL){free(ptr);};
 
-const char * string_unknown           = "Unknown";
+static const char * string_unknown           = "Unknown";
 
-const char * string_windows_bmp       = "Windows 3.1x bitmap (424D)";
-const char * string_os2_bitmap_array  = "OS/2 struct bitmap array (4241)";
-const char * string_os2_color_icon    = "OS/2 struct color icon (4349)";
-const char * string_os2_color_pointer = "OS/2 const color pointer (4350)";
-const char * string_os2_icon          = "OS/2 struct icon (4943)";
-const char * string_os2_pointer       = "OS/2 pointer (5054)";
+static const char * string_windows_bmp       = "Windows 3.1x bitmap (424D)";
+static const char * string_os2_bitmap_array  = "OS/2 struct bitmap array (4241)";
+static const char * string_os2_color_icon    = "OS/2 struct color icon (4349)";
+static const char * string_os2_color_pointer = "OS/2 const color pointer (4350)";
+static const char * string_os2_icon          = "OS/2 struct icon (4943)";
+static const char * string_os2_pointer       = "OS/2 pointer (5054)";
 
-const char * string_bitmapcoreheader   = "BMP core header";
-const char * string_os22xbitmapheader  = "OS/2 BMP header";
-const char * string_bitmapinfoheader   = "Standard BMP header";
-const char * string_bitmapv2infoheader = "Adobe Photoshop Externed BMP header ver.2";
-const char * string_bitmapv3infoheader = "Adobe Photoshop Externed BMP header ver.3";
-const char * string_os22xbitmapheader2 = "OS/2 BMP header ver.2";
-const char * string_bitmapv4header     = "Standard BMP header ver.4";
-const char * string_bitmapv5header     = "Standard BMP header ver.5";
+static const char * string_bitmapcoreheader   = "BMP core header";
+static const char * string_os22xbitmapheader  = "OS/2 BMP header";
+static const char * string_bitmapinfoheader   = "Standard BMP header";
+static const char * string_bitmapv2infoheader = "Adobe Photoshop Externed BMP header ver.2";
+static const char * string_bitmapv3infoheader = "Adobe Photoshop Externed BMP header ver.3";
+static const char * string_os22xbitmapheader2 = "OS/2 BMP header ver.2";
+static const char * string_bitmapv4header     = "Standard BMP header ver.4";
+static const char * string_bitmapv5header     = "Standard BMP header ver.5";
 
-const char * string_compress_bi_rgb             = "None";
-const char * string_compress_bi_rle8            = "RLE 8-bit/pixel";
-const char * string_compress_bi_rle4            = "RLE 4-bit/pixel";
-const char * string_compress_bi_bitfields       = "RGBA (Perhaps Huffman 1D)";
-const char * string_compress_bi_jpeg            = "JPEG image for printing";
-const char * string_compress_bi_png             = "PNG image for printing";
-const char * string_compress_bi_alphabitfields  = "RGBA bit field masks on Windows CE 5.0 with .NET 4.0 or later";
-const char * string_compress_bi_cmyk            = "Windows Metafile CMYK";
-const char * string_compress_bi_cmykrle8        = "Windows Metafile CMYK with RLE 8-bit/pixel";
-const char * string_compress_bi_cmykrle4        = "Windows Metafile CMYK with RLE 4-bit/pixel";
+static const char * string_compress_bi_rgb             = "None";
+static const char * string_compress_bi_rle8            = "RLE 8-bit/pixel";
+static const char * string_compress_bi_rle4            = "RLE 4-bit/pixel";
+static const char * string_compress_bi_bitfields       = "RGBA (Perhaps Huffman 1D)";
+static const char * string_compress_bi_jpeg            = "JPEG image for printing";
+static const char * string_compress_bi_png             = "PNG image for printing";
+static const char * string_compress_bi_alphabitfields  = "RGBA bit field masks on Windows CE 5.0 with .NET 4.0 or later";
+static const char * string_compress_bi_cmyk            = "Windows Metafile CMYK";
+static const char * string_compress_bi_cmykrle8        = "Windows Metafile CMYK with RLE 8-bit/pixel";
+static const char * string_compress_bi_cmykrle4        = "Windows Metafile CMYK with RLE 4-bit/pixel";
 
-const char * get_bmp_type_string(const unsigned char * type_word);
-const char * get_bmp_dib_string(uint32_t size);
-const char * get_bmp_comp_string(uint32_t method);
+static const char * get_bmp_type_string(const unsigned char * type_word);
+static const char * get_bmp_dib_string(uint32_t size);
+static const char * get_bmp_comp_string(uint32_t method);
 
 int convert_from_raw(tlb_image_t * image, uint32_t depth);
 uint8_t * convert_to_raw(tlb_image_t * image, uint32_t depth);
@@ -460,10 +460,10 @@ tlb_image_t * tlb_img_copy(tlb_image_t * src_image)
 uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y){
     /* Check the input legitimacy */
     if(x > image->width){
-        x = image->width;
+        return NULL;
     }
     if(y > image->height){
-        y = image->height;
+        return NULL;
     }
     return (image->data + 4*(y * image->width + x));
 }
@@ -490,6 +490,103 @@ int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t chan
     }
     (image->data + 4*(y * image->width + x))[channel] = val;
     return TLB_OK;
+}
+
+/*******************/
+/* block operation */
+/*******************/
+
+/* get the average color of a block */
+uint32_t tlb_block_average(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y)
+{
+    uint32_t color_sum[4] = {0};
+    uint8_t  color_ave[4] = {0};
+
+    uint32_t pixel_x = 0;
+    uint32_t pixel_y = 0;
+
+    uint8_t* pixel = NULL;
+
+    uint32_t block_size = length_x * length_y;
+
+    /* select a pixel in block */
+    for (pixel_x = 0; pixel_x < length_x; pixel_x++){
+        for (pixel_y = 0; pixel_y < length_y; pixel_y++){
+
+            /* get the pointer of the pixel */
+            pixel = tlb_pixel(image, offset_x + pixel_x, offset_y + pixel_y);
+            if (pixel != NULL){
+                color_sum[CHANNEL_R] += pixel[CHANNEL_R];
+                color_sum[CHANNEL_G] += pixel[CHANNEL_G];
+                color_sum[CHANNEL_B] += pixel[CHANNEL_B];
+                color_sum[CHANNEL_A] += pixel[CHANNEL_A];
+            }
+
+        }
+    }
+
+    color_ave[CHANNEL_R] = color_sum[CHANNEL_R] / block_size;
+    color_ave[CHANNEL_G] = color_sum[CHANNEL_G] / block_size;
+    color_ave[CHANNEL_B] = color_sum[CHANNEL_B] / block_size;
+    color_ave[CHANNEL_A] = color_sum[CHANNEL_A] / block_size;
+
+    return tlb_rgba(color_ave[CHANNEL_R], color_ave[CHANNEL_G], color_ave[CHANNEL_B], color_ave[CHANNEL_A]);
+}
+
+/* fill a block with a specific color */
+int tlb_block_fill(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y, uint32_t color)
+{
+    uint32_t pixel_x = 0;
+    uint32_t pixel_y = 0;
+
+    uint32_t* pixel = NULL;
+
+    /* select a pixel in block */
+    for (pixel_x = 0; pixel_x < length_x; pixel_x++){
+        for (pixel_y = 0; pixel_y < length_y; pixel_y++){
+
+            /* get the pointer of the pixel */
+            pixel = (uint32_t*)tlb_pixel(image, offset_x + pixel_x, offset_y + pixel_y);
+            if (pixel != NULL){
+                *pixel = color;
+            }
+
+        }
+    }
+
+    return TLB_OK;
+}
+
+tlb_image_t * tlb_block_mosaic(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y, uint32_t granularity)
+{
+    tlb_image_t * mosaic = NULL;
+
+    uint32_t color   = 0;
+
+    uint32_t block_x = 0;
+    uint32_t block_y = 0;
+
+    mosaic = tlb_img_copy(image);
+
+    for (block_x = granularity; block_x < length_x; block_x+=granularity){
+        for (block_y = granularity; block_y < length_y; block_y+=granularity){
+
+            color = tlb_block_average(mosaic,\
+                block_x + offset_x,\
+                block_y + offset_y,\
+                granularity,\
+                granularity);
+
+            tlb_block_fill(mosaic,\
+                block_x + offset_x,\
+                block_y + offset_y,\
+                granularity,\
+                granularity,\
+                color);
+        }
+    }
+
+    return mosaic;
 }
 
 /*******************/
@@ -555,6 +652,28 @@ int tlb_img_binary(tlb_image_t * image, uint8_t threshold){
         }
     }
     return 0;
+}
+
+tlb_image_t * tlb_img_channel(tlb_image_t * image, uint8_t channel)
+{
+    tlb_image_t * ext = NULL;
+
+    uint32_t pixel_index;
+    uint32_t pixel_cnt;
+    uint32_t pixel_mask;
+    uint32_t *img_data;
+
+    ext = tlb_img_copy(image);
+
+    pixel_mask = 0x000000FF << 8*channel;
+    pixel_cnt  = ext->width * ext->height;
+    img_data   = (uint32_t*)ext->data;
+
+    for (pixel_index = 0; pixel_index<pixel_cnt; pixel_index++){
+        img_data[pixel_index] = img_data[pixel_index]&pixel_mask;
+    }
+
+    return ext;
 }
 
 int tlb_img_color_replace(tlb_image_t * image, uint32_t find, uint32_t replace)
@@ -678,6 +797,11 @@ tlb_image_t * tlb_img_histogram(tlb_image_t * image)
     tlb_img_color_replace(histogram, tlb_rgba(255,255,255,0), tlb_rgba(100,150,200,0));
 
     return histogram;
+}
+
+tlb_image_t * tlb_img_mosaic(tlb_image_t * image, uint32_t granularity)
+{
+    return tlb_block_mosaic(image, 0, 0, image->width, image->height, granularity);
 }
 
 /*********************/

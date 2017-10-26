@@ -28,6 +28,24 @@ Use this lib, I have made the following images:
 
 ![binary](http://www.short-circuits.org/tlibmp/out_binary.bmp)
 
+### Channel R
+
+![channel R](http://www.short-circuits.org/tlibmp/out_channel_r.bmp)
+
+### Channel G
+
+![channel G](http://www.short-circuits.org/tlibmp/out_channel_g.bmp)
+
+### Channel B
+
+![channel B](http://www.short-circuits.org/tlibmp/out_channel_b.bmp)
+
+### Mosaic
+
+![mosaic](http://www.short-circuits.org/tlibmp/out_block_mosaic.bmp)
+
+![mosaic](http://www.short-circuits.org/tlibmp/out_mosaic.bmp)
+
 ### Color inverse
 
 ![inverse](http://www.short-circuits.org/tlibmp/out_inverse.bmp)
