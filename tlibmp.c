@@ -675,7 +675,7 @@ tlb_image_t * tlb_img_histogram(tlb_image_t * image)
     tlb_img_color_replace(histogram, tlb_rgba(0,255,255,0), tlb_rgba(180,210,255,0));
 
     tlb_img_color_replace(histogram, tlb_rgba(0,0,0,0), tlb_rgba(230,230,230,0));
-    tlb_img_color_replace(histogram, tlb_rgba(255,255,255,0), tlb_rgba(150,150,250,0));
+    tlb_img_color_replace(histogram, tlb_rgba(255,255,255,0), tlb_rgba(100,150,200,0));
 
     return histogram;
 }
