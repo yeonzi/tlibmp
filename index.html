@@ -599,6 +599,17 @@ int tlb_save_bmp(const char *file_name, tlb_image_t * image);
 /* print basic info of a bmp file */
 int tlb_print_bmp_info(const char *file_name);
 
+/* pixel operation APIs */
+
+/* get a array of the pixel */
+uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y);
+
+/* print a pixel with specific color */
+int tlp_print_pixel(tlb_image_t * image, uint32_t x, uint32_t y, uint32_t color);
+
+/* print a pixel with specific color */
+int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val);
+
 /* Image operation APIs */
 
 /* new image */
