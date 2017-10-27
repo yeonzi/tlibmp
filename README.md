@@ -21,6 +21,9 @@ these is some demo with this lib:
 ### Draw lines
 ![lines](http://www.short-circuits.org/tlibmp/out_lines.bmp)
 
+### Draw triangles
+![lines](http://www.short-circuits.org/tlibmp/out_triangle.bmp)
+
 ## Image processing
 
 it also contain some basic	image processing functions.

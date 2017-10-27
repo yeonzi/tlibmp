@@ -131,6 +131,8 @@ int tlb_pixel_ch_set(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channe
 /* drowing APIs */
 int tlb_draw_line(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, color_t color);
 
+int tlb_draw_triangle(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, color_t color);
+
 /* Image operation APIs */
 
 /* new image */

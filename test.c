@@ -74,6 +74,43 @@ int line_test(const char * bmpfile){
     return 0;
 }
 
+int triangle(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, color_t c){
+    if(x0-x1<5||x1-x0<5||x0-x2<5||x2-x0<5||x1-x2<5||x2-x1<5){
+        tlb_draw_triangle(image,x0,y0,x1,y1,x2,y2,c);
+        return 0;
+    }
+    triangle(image,\
+        (x0+x1)/2, (y0+y1)/2,\
+        x0, y0,\
+        (x2+x0)/2, (y2+y0)/2,\
+        c);
+
+    triangle(image,\
+        x2, y2,\
+        (x1+x2)/2, (y1+y2)/2,\
+        (x2+x0)/2, (y2+y0)/2,\
+        c);
+
+    triangle(image,\
+        (x0+x1)/2, (y0+y1)/2,\
+        (x1+x2)/2, (y1+y2)/2,\
+        x1, y1,\
+        c);
+
+    return 0;
+}
+
+int triangle_test(const char * bmpfile){
+    tlb_image_t * image = NULL;
+    image = tlb_img_new(500,500,tlb_rgb(0,0,0));
+    
+    triangle(image,10,10,490,10,250,490,tlb_rgb(255,255,255));
+
+    tlb_save_bmp(bmpfile, image);
+    tlb_img_free(image);
+    return 0;
+}
+
 int main(void)
 {
     tlb_image_t * origin = NULL;
@@ -147,6 +184,8 @@ int main(void)
     color_test("out_color.bmp");
 
     line_test("out_lines.bmp");
+
+    triangle_test("out_triangle.bmp");
 
     return 0;
 }

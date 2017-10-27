@@ -61,6 +61,10 @@ SOFTWARE.
 }
 
 #define s_free(ptr)  if(ptr!=NULL){free(ptr);};
+#define tlb_swap(x, y)\
+    x = x^y;\
+    y = x^y;\
+    x = x^y; 
 
 static const char * string_unknown           = "Unknown";
 
@@ -634,27 +638,15 @@ int tlb_draw_line(tlb_image_t * image,\
 
     if (dx<dy&&dx!=0&&dy!=0&&dx!=dy){
         /* if the line is steep, rotate the canvas */
-        /* inline swap(x0, y0) */
-        x  = x0;
-        x0 = y0;
-        y0 = x;
-        /* inline swap(x1, y1) */
-        x  = x1;
-        x1 = y1;
-        y1 = x;
+        tlb_swap(x0, y0);
+        tlb_swap(x1, y1);
         steep = 1;
     }
 
     if (x0>x1) {
         /* make line from left to right */
-        /* inline swap(x0, x1) */
-        x  = x0;
-        x0 = x1;
-        x1 = x;
-        /* inline swap(y0, y1) */
-        y  = y0;
-        y0 = y1;
-        y1 = y;
+        tlb_swap(x0, x1);
+        tlb_swap(y0, y1);
     }
 
     if(dx!=0&&dy!=0&&dx!=dy){
@@ -698,6 +690,74 @@ int tlb_draw_line(tlb_image_t * image,\
 
     return TLB_OK;
 }
+
+int tlb_draw_triangle(\
+    tlb_image_t * image,\
+    uint32_t x0,\
+    uint32_t y0,\
+    uint32_t x1,\
+    uint32_t y1,\
+    uint32_t x2,\
+    uint32_t y2,\
+    color_t color)
+{
+    int32_t height;
+    int32_t i,j;
+    float   k_a;
+    float   k_b;
+    int8_t  half_height;
+    int32_t x_a;
+    int32_t x_b;
+    int32_t seg_height;
+
+    if (y0==y1 && y0==y2){
+        return TLB_ERROR;   
+    }
+
+    /* sort the point by y */
+    if(y0>y1){
+        tlb_swap(x0, x1);
+        tlb_swap(y0, y1);
+    }
+    if(y0>y2){
+        tlb_swap(x0, x2);
+        tlb_swap(y0, y2);
+    }
+    if(y1>y2){
+        tlb_swap(x1, x2);
+        tlb_swap(y1, y2);
+    }
+
+    height = y2-y0;
+    for (i = 0; i < height; i++){
+        if(y1==y0){
+            half_height = 1;
+        }else if(i>=(int32_t)(y1-y0)){
+            half_height = 1;
+        }
+
+        seg_height  = half_height ? y2-y1 : y1-y0;
+
+        k_a = (float)i/height;
+        k_b = (float)(i - (half_height ? y1-y0 : 0))/seg_height;
+
+        x_a = x0 + k_a * (int32_t)(x2 - x0);
+        x_b = half_height ? x1 + k_b * (int32_t)(x2 - x1) : x0 + k_b * (int32_t)(x1 - x0);
+        if(x_a>x_b){
+            tlb_swap(x_a,x_b);
+        }
+        for(j = x_a; j < x_b; j++){
+            tlb_pixel_set(image, j, i+y0, color);
+        }
+    }
+
+    // tlb_pixel_set(image, x0, y0, tlb_rgb(255,255,255));
+    // tlb_pixel_set(image, x1, y1, tlb_rgb(255,255,255));
+    // tlb_pixel_set(image, x2, y2, tlb_rgb(255,255,255));
+
+    return TLB_OK;
+}
+
 
 /*******************/
 /* image operation */
