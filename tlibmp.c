@@ -96,7 +96,7 @@ static const char * get_bmp_dib_string(uint32_t size);
 static const char * get_bmp_comp_string(uint32_t method);
 
 int convert_from_raw(tlb_image_t * image, uint32_t depth);
-uint8_t * convert_to_raw(tlb_image_t * image, uint32_t depth);
+uint8_t * convert_to_raw(tlb_image_t * image, uint32_t depth, uint32_t * size);
 
 tlb_image_t * tlb_load_bmp(const char *file_name)
 {
@@ -272,8 +272,16 @@ int tlb_save_bmp(const char *file_name, tlb_image_t * image)
 
     FILE * fp = NULL;
 
+    /* convert to bmp data */
+    bmp_data = convert_to_raw(image, 3, &data_size);
+
+    /* convert exceptional */
+    if(bmp_data == NULL){
+        fprintf(stderr, "Cannot convert this file.\n");
+        return TLB_ERROR;
+    }
+
     data_offset = sizeof(bmp_header_t) + sizeof(bmp_stddib_t);
-    data_size   = image->width * image->height * 3; /* 3 means use 3 byte pre pixel */
     file_size   = data_offset + data_size;
 
     /* bmp header magic */
@@ -294,15 +302,6 @@ int tlb_save_bmp(const char *file_name, tlb_image_t * image)
     dib_info.biYPelsPerMeter = 72;
     dib_info.biClrUsed       = 0;
     dib_info.biClrImportant  = 0;
-
-    /* convert to bmp data */
-    bmp_data = convert_to_raw(image, 3);
-
-    /* convert exceptional */
-    if(bmp_data == NULL){
-        fprintf(stderr, "Cannot convert this file.\n");
-        return TLB_ERROR;
-    }
 
     /* open file */
     fp = fopen(file_name,"wb");
@@ -865,7 +864,19 @@ int convert_from_raw(tlb_image_t * image, uint32_t depth)
     uint8_t * dst;
     uint8_t pixel[4] = {0};
 
-    src = image->data + (image->width * image->height * depth - depth);
+    uint32_t convert_cnt = 0;
+    uint32_t width_fixed = 0;
+    uint8_t align_bit = 0;
+
+    uint32_t pixel_cnt = 0;
+
+    width_fixed = depth * image->width;
+    if(width_fixed%4!=0){
+        width_fixed = (width_fixed - width_fixed % 4 + 4);
+        align_bit = 4 - (depth * image->width) % 4;
+    }
+
+    src = image->data + (width_fixed * image->height - align_bit - depth);
     dst = image->data + (image->width * image->height * CHANNEL_CNT - CHANNEL_CNT);
 
     if(depth == 3){
@@ -879,6 +890,14 @@ int convert_from_raw(tlb_image_t * image, uint32_t depth)
 
             src -= depth;
             dst -= CHANNEL_CNT;
+            convert_cnt ++;
+            pixel_cnt++;
+            if(convert_cnt==image->width){
+                for(convert_cnt=0;convert_cnt<align_bit;convert_cnt++){
+                    src --;
+                }
+                convert_cnt = 0;
+            }
         }
         /* deal with the last bit */
         pixel[CHANNEL_R] = src[2];
@@ -889,7 +908,8 @@ int convert_from_raw(tlb_image_t * image, uint32_t depth)
         dst[CHANNEL_G] = pixel[CHANNEL_G];
         dst[CHANNEL_B] = pixel[CHANNEL_B];
         dst[CHANNEL_A] = pixel[CHANNEL_A];
-
+        pixel_cnt++;
+        fprintf(stderr, "%d pixel converted\n", pixel_cnt);
     }else if(depth == 4){
         /* 32-bit RGBA color mode */
         do{
@@ -912,17 +932,26 @@ int convert_from_raw(tlb_image_t * image, uint32_t depth)
     return TLB_OK;
 }
 
-uint8_t * convert_to_raw(tlb_image_t * image, uint32_t depth)
+uint8_t * convert_to_raw(tlb_image_t * image, uint32_t depth, uint32_t * size)
 {
     /* converted data */
     uint8_t * data = NULL;
 
-    uint8_t * head = image->data;
     uint8_t * src;
     uint8_t * dst;
 
+    uint32_t width_fixed = 0;
+    uint32_t width_writed = 0;
+    uint32_t height_writed = 0;
+
+    /* width need to aligned to 4 byte */
+    width_fixed = depth * image->width;
+    if(width_fixed%4!=0)
+        width_fixed = (width_fixed - width_fixed % 4 + 4);
+
     /* malloc memory for converted data */
-    data = malloc( image->width * image->height * depth );
+    *size = width_fixed * image->height;
+    data = malloc( *size );
 
     /* malloc exceptional */
     if(data == NULL){
@@ -930,21 +959,27 @@ uint8_t * convert_to_raw(tlb_image_t * image, uint32_t depth)
         return NULL;
     }
 
-    dst = data + (image->width * image->height * depth - depth);
-    src = image->data + (image->width * image->height * CHANNEL_CNT - CHANNEL_CNT);
+    dst = data;
+    src = image->data;
 
     if(depth == 3){
         /* 24-bit RGB color mode */
         fprintf(stderr, "Warning: All data in Alpha area will LOST.\n");
-        do{
-            /* Mapping matrix */
-            dst[CHANNEL_R] = src[2];
-            dst[CHANNEL_G] = src[1];
-            dst[CHANNEL_B] = src[0];
+        for(height_writed = 0; height_writed < image->height; height_writed++){
+            for(width_writed = 0; width_writed < 3*image->width; width_writed+=3){
+                dst[CHANNEL_R] = src[2];
+                dst[CHANNEL_G] = src[1];
+                dst[CHANNEL_B] = src[0];
+                src += CHANNEL_CNT;
+                dst += depth;
+            }
+            while(width_writed < width_fixed){
+                *dst = 0x00;
+                dst++;
+                width_writed++;
+            }
+        }
 
-            src -= CHANNEL_CNT;
-            dst -= depth;
-        }while(src>=head);
     }
     return data;
 }
