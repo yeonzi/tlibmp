@@ -552,7 +552,11 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p><img src="./out_lines.bmp" alt="lines"></p>
 
-<h2 id="toc_4">Image processing</h2>
+<h3 id="toc_4">Draw triangles</h3>
+
+<p><img src="./out_triangle.bmp" alt="lines"></p>
+
+<h2 id="toc_5">Image processing</h2>
 
 <p>it also contain some basic  image processing functions.</p>
 
@@ -565,19 +569,19 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p>Use this lib, I have made the following images:</p>
 
-<h3 id="toc_5">Gray</h3>
+<h3 id="toc_6">Gray</h3>
 
 <p><img src="./out_gray.bmp" alt="gray"></p>
 
-<h3 id="toc_6">Binary</h3>
+<h3 id="toc_7">Binary</h3>
 
 <p><img src="./out_binary.bmp" alt="binary"></p>
 
-<h3 id="toc_7">Color inverse</h3>
+<h3 id="toc_8">Color inverse</h3>
 
 <p><img src="./out_inverse.bmp" alt="inverse"></p>
 
-<h3 id="toc_8">Histogram graph</h3>
+<h3 id="toc_9">Histogram graph</h3>
 
 <p><img src="./out_histogram_r.bmp" alt="histogram_r"></p>
 
@@ -587,12 +591,12 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p><img src="./out_histogram.bmp" alt="histogram"></p>
 
-<h3 id="toc_9">Mosaic</h3>
+<h3 id="toc_10">Mosaic</h3>
 
 <p><img src="./out_block_mosaic.bmp" alt="block mosaic">
 <img src="./out_mosaic.bmp" alt="mosaic"></p>
 
-<h2 id="toc_10">Data Format</h2>
+<h2 id="toc_11">Data Format</h2>
 
 <p>there are only one format for the bitmap:</p>
 
@@ -605,9 +609,9 @@ typedef struct {
 
 <p>as the content of the struct may change later, you should <strong>never</strong> call the element directly.</p>
 
-<h2 id="toc_11">APIs</h2>
+<h2 id="toc_12">APIs</h2>
 
-<h3 id="toc_12">Summary</h3>
+<h3 id="toc_13">Summary</h3>
 
 <div><pre class="line-numbers"><code class="language-c">/* BMP operation APIs */
 
@@ -646,19 +650,19 @@ tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel);
 /* create a histogram graph of all visible channel */
 tlb_image_t * tlb_img_histogram(tlb_image_t * image);</code></pre></div>
 
-<h3 id="toc_13">Detail</h3>
+<h3 id="toc_14">Detail</h3>
 
-<h4 id="toc_14">tlb_image_t * tlb_load_bmp(const char *file_name);</h4>
+<h4 id="toc_15">tlb_image_t * tlb_load_bmp(const char *file_name);</h4>
 
-<h5 id="toc_15">Entry parameters：</h5>
+<h5 id="toc_16">Entry parameters：</h5>
 
 <p><code>const char *file_name</code> : the path of the file to load, just like fopen. ( In fact, it was passed directly to fopen(3) )</p>
 
-<h5 id="toc_16">Return：</h5>
+<h5 id="toc_17">Return：</h5>
 
 <p>This fucntion will return a pointer to a struct with image loaded.</p>
 
-<h5 id="toc_17">Usage reference:</h5>
+<h5 id="toc_18">Usage reference:</h5>
 
 <div><pre class="line-numbers"><code class="language-c">/* a NULL pointer of the object */
 tlb_image_t * image = NULL;

@@ -21,6 +21,9 @@ these is some demo with this lib:
 ### Draw lines
 ![lines](./out_lines.bmp)
 
+### Draw triangles
+![lines](./out_triangle.bmp)
+
 ## Image processing
 
 it also contain some basic	image processing functions.
