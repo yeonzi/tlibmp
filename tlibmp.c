@@ -374,7 +374,7 @@ int tlb_print_bmp_info(const char *file_name)
 /***************/
 /* Image utils */
 /***************/
-tlb_image_t * tlb_img_new(uint32_t width, uint32_t height, uint32_t bgcolor)
+tlb_image_t * tlb_img_new(uint32_t width, uint32_t height, color_t bgcolor)
 {
     tlb_image_t * image = NULL;
 
@@ -397,7 +397,7 @@ tlb_image_t * tlb_img_new(uint32_t width, uint32_t height, uint32_t bgcolor)
     image->height = height;
 
     /* malloc for cooked img data */
-    image->data = malloc((4*image->width*image->height)*sizeof(char));
+    image->data = malloc((4*image->width*image->height)*sizeof(uint8_t));
     if(image->data == NULL){
         fprintf(stderr, "Error: Can not malloc for new object.\n");
         return NULL;
@@ -468,7 +468,7 @@ uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y){
 }
 
 /* print a pixel with specific color */
-int tlp_print_pixel(tlb_image_t * image, uint32_t x, uint32_t y, uint32_t color){
+int tlb_pixel_set(tlb_image_t * image, uint32_t x, uint32_t y, color_t color){
     if(x > image->width){
         return TLB_ERROR;
     }
@@ -480,7 +480,7 @@ int tlp_print_pixel(tlb_image_t * image, uint32_t x, uint32_t y, uint32_t color)
 }
 
 /* print a pixel with specific color */
-int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val){
+int tlb_pixel_ch_set(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val){
     if(x > image->width){
         return TLB_ERROR;
     }
@@ -496,7 +496,9 @@ int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t chan
 /*******************/
 
 /* get the average color of a block */
-uint32_t tlb_block_average(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y)
+uint32_t tlb_block_average(tlb_image_t * image,\
+                        uint32_t offset_x, uint32_t offset_y,\
+                        uint32_t length_x, uint32_t length_y)
 {
     uint32_t color_sum[4] = {0};
     uint8_t  color_ave[4] = {0};
@@ -529,11 +531,17 @@ uint32_t tlb_block_average(tlb_image_t * image, uint32_t offset_x, uint32_t offs
     color_ave[CHANNEL_B] = color_sum[CHANNEL_B] / block_size;
     color_ave[CHANNEL_A] = color_sum[CHANNEL_A] / block_size;
 
-    return tlb_rgba(color_ave[CHANNEL_R], color_ave[CHANNEL_G], color_ave[CHANNEL_B], color_ave[CHANNEL_A]);
+    return tlb_rgba(color_ave[CHANNEL_R],\
+                    color_ave[CHANNEL_G],\
+                    color_ave[CHANNEL_B],\
+                    color_ave[CHANNEL_A]);
 }
 
 /* fill a block with a specific color */
-int tlb_block_fill(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y, uint32_t color)
+int tlb_block_fill(tlb_image_t * image,\
+                uint32_t offset_x, uint32_t offset_y,\
+                uint32_t length_x, uint32_t length_y,\
+                color_t color)
 {
     uint32_t pixel_x = 0;
     uint32_t pixel_y = 0;
@@ -556,7 +564,10 @@ int tlb_block_fill(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, ui
     return TLB_OK;
 }
 
-tlb_image_t * tlb_block_mosaic(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y, uint32_t granularity)
+tlb_image_t * tlb_block_mosaic(tlb_image_t * image,\
+                            uint32_t offset_x, uint32_t offset_y,\
+                            uint32_t length_x, uint32_t length_y,\
+                            uint32_t granularity)
 {
     tlb_image_t * mosaic = NULL;
 
@@ -675,7 +686,7 @@ tlb_image_t * tlb_img_channel(tlb_image_t * image, uint8_t channel)
     return ext;
 }
 
-int tlb_img_color_replace(tlb_image_t * image, uint32_t find, uint32_t replace)
+int tlb_img_color_replace(tlb_image_t * image, color_t find, color_t replace)
 {
     uint32_t size = image->width * image->height;
     uint32_t *data = (uint32_t*)image->data;
@@ -687,7 +698,7 @@ int tlb_img_color_replace(tlb_image_t * image, uint32_t find, uint32_t replace)
     return 0;
 }
 
-int tlb_img_color_switch(tlb_image_t * image, uint32_t color1, uint32_t color2)
+int tlb_img_color_switch(tlb_image_t * image, color_t color1, color_t color2)
 {
     uint32_t size = image->width * image->height;
     uint32_t *data = (uint32_t*)image->data;
@@ -734,7 +745,7 @@ tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel)
 
     for(i = 0; i < 256; i++){
         for(j = summary[i]; j>=0; j--){
-            tlp_print_pixel_ch(histogram, i, j, channel, 0xFF);
+            tlb_pixel_ch_set(histogram, i, j, channel, 0xFF);
         }
     }
     return histogram;
@@ -775,10 +786,10 @@ tlb_image_t * tlb_img_histogram(tlb_image_t * image)
 
         for(i = 0; i < 256; i++){
             for(j = summary[i]; j>=0; j--){
-                tlp_print_pixel_ch(histogram, (2*i), j, channel, 0x00);
+                tlb_pixel_ch_set(histogram, (2*i), j, channel, 0x00);
             }
             for(j = summary[i]; j>=0; j--){
-                tlp_print_pixel_ch(histogram, (2*i)+1, j, channel, 0x00);
+                tlb_pixel_ch_set(histogram, (2*i)+1, j, channel, 0x00);
             }
         }
     }

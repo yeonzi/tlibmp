@@ -99,8 +99,10 @@ typedef struct {
     uint8_t  *data;             /* Data format: [RGBA]    */
 }tlb_image_t;
 
-#define tlb_rgb(R,G,B)              (uint32_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16))
-#define tlb_rgba(R,G,B,A)           (uint32_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16)+((uint8_t)A<<24))
+typedef uint32_t color_t;
+
+#define tlb_rgb(R,G,B)              (color_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16))
+#define tlb_rgba(R,G,B,A)           (color_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16)+((uint8_t)A<<24))
 
 /* BMP operation APIs */
 
@@ -121,15 +123,15 @@ int tlb_print_bmp_info(const char *file_name);
 uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y);
 
 /* print a pixel with specific color */
-int tlp_print_pixel(tlb_image_t * image, uint32_t x, uint32_t y, uint32_t color);
+int tlb_pixel_set(tlb_image_t * image, uint32_t x, uint32_t y, color_t color);
 
 /* print a pixel with specific color */
-int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val);
+int tlb_pixel_ch_set(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val);
 
 /* Image operation APIs */
 
 /* new image */
-tlb_image_t * tlb_img_new(uint32_t width, uint32_t height, uint32_t bgcolor);
+tlb_image_t * tlb_img_new(uint32_t width, uint32_t height, color_t bgcolor);
 
 /* delete image */
 void tlb_img_free(tlb_image_t * image);
@@ -141,7 +143,7 @@ int tlb_img_inverse(tlb_image_t * image);
 int tlb_img_gray(tlb_image_t * image);
 int tlb_img_binary(tlb_image_t * image, uint8_t threshold);
 
-int tlb_img_color_replace(tlb_image_t * image, uint32_t find, uint32_t replace);
+int tlb_img_color_replace(tlb_image_t * image, color_t find, color_t replace);
 
 tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel);
 tlb_image_t * tlb_img_histogram(tlb_image_t * image);
