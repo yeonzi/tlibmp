@@ -61,10 +61,9 @@ SOFTWARE.
 }
 
 #define s_free(ptr)  if(ptr!=NULL){free(ptr);};
-#define tlb_swap(x, y)\
-    x = x^y;\
-    y = x^y;\
-    x = x^y; 
+#define tlb_swap(x, y)  {x = x^y;\
+                         y = x^y;\
+                         x = x^y;}
 
 static const char * string_unknown           = "Unknown";
 
@@ -276,6 +275,11 @@ int tlb_save_bmp(const char *file_name, tlb_image_t * image)
 
     FILE * fp = NULL;
 
+    if(image==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) image.\n",__FUNCTION__);
+        return TLB_ERROR;
+    }
+
     /* convert to bmp data */
     bmp_data = convert_to_raw(image, 3, &data_size);
 
@@ -429,6 +433,11 @@ tlb_image_t * tlb_img_copy(tlb_image_t * src_image)
 {
     tlb_image_t * image = NULL;
 
+    if(src_image==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) image.\n",__FUNCTION__);
+        return NULL;
+    }
+
     /* get memory for image */
     image = malloc(sizeof(tlb_image_t));
 
@@ -454,6 +463,40 @@ tlb_image_t * tlb_img_copy(tlb_image_t * src_image)
     memcpy(image->data, src_image->data, (4*image->width*image->height));
 
     return image;
+}
+
+tlb_image_t * tlb_img_chop(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1)
+{
+    tlb_image_t * chop = NULL;
+    uint32_t x,y;
+
+    if(image==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) image.\n",__FUNCTION__);
+        return NULL;
+    }
+
+    if((x0==x1)||(y0==y1)){
+        fprintf(stderr, "Error: Selected area too small.\n");
+        return NULL;
+    }
+
+    /* make point 1 on left-down and point 2 on right-up */
+    if(x0 > x1) tlb_swap(x0, x1);
+    if(y0 > y1) tlb_swap(y0, y1);
+
+    /* adjust for large area */
+    x1 = (x1>image->width)  ? image->width  : x1 ;
+    y1 = (x1>image->height) ? image->height : y1 ;
+
+    chop = tlb_img_new(x1-x0, y1-y0, 0);
+
+    for (x = x0; x < x1; x++){
+        for (y = y0; y < y1; y++){
+            *(uint32_t*)tlb_pixel(chop, x-x0, y-y0) = *(uint32_t*)tlb_pixel(image, x, y);
+        }
+    }
+
+    return chop;
 }
 
 /*******************/

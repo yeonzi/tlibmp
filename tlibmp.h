@@ -143,6 +143,7 @@ void tlb_img_free(tlb_image_t * image);
 
 /* make a copy of a image */
 tlb_image_t * tlb_img_copy(tlb_image_t * image);
+tlb_image_t * tlb_img_chop(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1);
 
 int tlb_img_inverse(tlb_image_t * image);
 int tlb_img_gray(tlb_image_t * image);
