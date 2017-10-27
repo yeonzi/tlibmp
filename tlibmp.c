@@ -599,6 +599,106 @@ tlb_image_t * tlb_block_mosaic(tlb_image_t * image,\
     return mosaic;
 }
 
+/********************/
+/* drowing in image */
+/********************/
+
+int tlb_draw_line(tlb_image_t * image,\
+    uint32_t x0, uint32_t y0, \
+    uint32_t x1, uint32_t y1, \
+    color_t color)
+{
+    /* I have use a lot of inline sentences in this function */
+    /* it was not for speed, just bucause I'm lazy */
+    uint8_t  steep = 0;
+    uint32_t x;
+    uint32_t y;
+    uint32_t dx;
+    uint32_t dy;
+    float    t;
+
+    /* inline abs(x0-x1) */
+    if(x0 > x1){
+        dx = x0 - x1;
+    }else{
+        dx = x1 - x0;
+    }
+
+    /* inline abs(y0-y1) */
+    if(y0 > y1){
+        dy = y0 - y1;
+    }else{
+        dy = y1 - y0;
+    }
+
+
+    if (dx<dy&&dx!=0&&dy!=0&&dx!=dy){
+        /* if the line is steep, rotate the canvas */
+        /* inline swap(x0, y0) */
+        x  = x0;
+        x0 = y0;
+        y0 = x;
+        /* inline swap(x1, y1) */
+        x  = x1;
+        x1 = y1;
+        y1 = x;
+        steep = 1;
+    }
+
+    if (x0>x1) {
+        /* make line from left to right */
+        /* inline swap(x0, x1) */
+        x  = x0;
+        x0 = x1;
+        x1 = x;
+        /* inline swap(y0, y1) */
+        y  = y0;
+        y0 = y1;
+        y1 = y;
+    }
+
+    if(dx!=0&&dy!=0&&dx!=dy){
+        /* Draw line with Bresenham’s Line Drawing Algorithm */
+        for(x = x0; x <= x1; x++){
+            t = (x-x0) / (float)(x1-x0);
+            y = y0 * (1.0-t) + y1 * t;
+            if (steep) { 
+                tlb_pixel_set(image, y, x, color);
+            } else { 
+                tlb_pixel_set(image, x, y, color); 
+            } 
+        }
+    }else if(dx==dy&&y0<y1){
+        /* k = 1 line */
+        for(x = x0, y = y0; x <= x1; x++, y++){
+                tlb_pixel_set(image, x, y, color); 
+        }
+    }else if(dx==dy&&y0>y1){
+        /* k = -1 line */
+        for(x = x0, y = y0; x <= x1; x++, y--){
+                tlb_pixel_set(image, x, y, color); 
+        }
+    }else if(dx==0){
+        /* k = 0 line */
+        x = x0;
+        y = y0<y1?y0:y1;
+        y1 = y0>y1?y0:y1;
+        y0 = y;
+        for(y = y0; y <= y1; y++){
+                tlb_pixel_set(image, x, y, color); 
+        }
+    }else if(dy==0){
+        /* k = ∞ line */
+        for(x = x0, y = y0; x <= x1; x++){
+                tlb_pixel_set(image, x, y, color); 
+        }
+    }else{
+        return TLB_ERROR;
+    }
+
+    return TLB_OK;
+}
+
 /*******************/
 /* image operation */
 /*******************/

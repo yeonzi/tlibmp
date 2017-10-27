@@ -9,7 +9,21 @@ A tiny libary that can read/write/edit .BMP files from disk
 
 [View project homepage](http://www.short-circuits.org/tlibmp/index.html)
 
-## Overview
+## Basic
+
+It was a lib that can create bmp file, and print in it.
+
+these is some demo with this lib:
+
+### Color print
+![color](http://www.short-circuits.org/tlibmp/out_color.bmp)
+
+### Draw lines
+![lines](http://www.short-circuits.org/tlibmp/out_lines.bmp)
+
+## Image processing
+
+it also contain some basic	image processing functions.
 
 I use a picture from pixiv by
 [(ˉ﹃ˉ)EM1234](https://www.pixiv.net/member.php?id=8467971) as following:

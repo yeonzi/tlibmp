@@ -21,6 +21,59 @@ SOFTWARE.
 #include "tlibmp.h"
 #include <stdio.h>
 
+int color_test(const char * bmpfile){
+    tlb_image_t * image = NULL;
+    int32_t x,y;
+    /* drow colors */
+    image = tlb_img_new(256,256,tlb_rgb(0,0,0));
+    for(x = 0; x<256; x++){
+        for(y = 0; y<256; y++){
+            tlb_pixel_set(image, x, y, tlb_rgb(x,0,y));
+        }
+    }
+    tlb_save_bmp(bmpfile, image);
+    tlb_img_free(image);
+    return 0;
+}
+
+int line_test(const char * bmpfile){
+    tlb_image_t * image = NULL;
+    int32_t x,y;
+    /* drow lines */
+    image = tlb_img_new(510,510,tlb_rgb(0,0,255));
+    y = 505;
+    for(x = 5; x < 505; x+=50){
+        tlb_draw_line(image,5,5,x,y,tlb_rgb(255,255,0));
+    }
+    for(y = 505; y >= 5; y-=50){
+        tlb_draw_line(image,5,5,x,y,tlb_rgb(255,255,0));
+    }
+    y = 5;
+    for(x = 5; x < 505; x+=50){
+        tlb_draw_line(image, 5, 505, x, y, tlb_rgb(255,255,0));
+    }
+    for(y = 505; y >= 5; y-=50){
+        tlb_draw_line(image, 5, 505, x, y, tlb_rgb(255,255,0));
+    }
+    y = 5;
+    for(x = 505; x > 5; x-=50){
+        tlb_draw_line(image, 505, 505, x, y, tlb_rgb(255,255,0));
+    }
+    for(y = 5; y <= 505; y+=50){
+        tlb_draw_line(image, 505, 505, x, y, tlb_rgb(255,255,0));
+    }
+    y = 505;
+    for(x = 505; x > 5; x-=50){
+        tlb_draw_line(image, 505, 5, x, y, tlb_rgb(255,255,0));
+    }
+    for(y = 505; y >= 5; y-=50){
+        tlb_draw_line(image, 505, 5, x, y, tlb_rgb(255,255,0));
+    }
+    tlb_save_bmp(bmpfile, image);
+    tlb_img_free(image);
+    return 0;
+}
+
 int main(void)
 {
     tlb_image_t * origin = NULL;
@@ -83,13 +136,17 @@ int main(void)
     tlb_save_bmp("./out_channel_b.bmp", image);
     tlb_img_free(image);
 
-    image = tlb_img_mosaic(origin,10);
+    image = tlb_img_mosaic(origin,5);
     tlb_save_bmp("./out_mosaic.bmp", image);
     tlb_img_free(image);
 
-    image = tlb_block_mosaic(origin, 350, 250, 370, 250, 10);
+    image = tlb_block_mosaic(origin, 175, 125, 185, 125, 5);
     tlb_save_bmp("./out_block_mosaic.bmp", image);
     tlb_img_free(image);
+
+    color_test("out_color.bmp");
+
+    line_test("out_lines.bmp");
 
     return 0;
 }
