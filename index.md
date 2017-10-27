@@ -9,9 +9,23 @@ A tiny libary that can read/write/edit .BMP files from disk
 
 [View on Github](https://github.com/yeonzi/tlibmp)
 
-## Overview
+## Basic
 
-I use a picture from pixiv by
+It was a lib that can create bmp file, and print in it.
+
+these is some demo with this lib:
+
+### Color print
+![color](./out_color.bmp)
+
+### Draw lines
+![lines](./out_lines.bmp)
+
+## Image processing
+
+it also contain some basic	image processing functions.
+
+To show this, I use a picture from pixiv by
 [(ˉ﹃ˉ)EM1234](https://www.pixiv.net/member.php?id=8467971) as following:
 
 [![origin](./test.bmp)](https://www.pixiv.net/member_illust.php?mode=medium&amp;illust_id=61057871)
@@ -41,6 +55,11 @@ Use this lib, I have made the following images:
 ![histogram_b](./out_histogram_b.bmp)
 
 ![histogram](./out_histogram.bmp)
+
+### Mosaic
+
+![block mosaic](./out_block_mosaic.bmp)
+![mosaic](./out_mosaic.bmp)
 
 ## Data Format
 

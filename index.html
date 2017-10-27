@@ -538,9 +538,25 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p><a href="https://github.com/yeonzi/tlibmp">View on Github</a></p>
 
-<h2 id="toc_1">Overview</h2>
+<h2 id="toc_1">Basic</h2>
 
-<p>I use a picture from pixiv by
+<p>It was a lib that can create bmp file, and print in it.</p>
+
+<p>these is some demo with this lib:</p>
+
+<h3 id="toc_2">Color print</h3>
+
+<p><img src="./out_color.bmp" alt="color"></p>
+
+<h3 id="toc_3">Draw lines</h3>
+
+<p><img src="./out_lines.bmp" alt="lines"></p>
+
+<h2 id="toc_4">Image processing</h2>
+
+<p>it also contain some basic  image processing functions.</p>
+
+<p>To show this, I use a picture from pixiv by
 <a href="https://www.pixiv.net/member.php?id=8467971">(ˉ﹃ˉ)EM1234</a> as following:</p>
 
 <p><a href="https://www.pixiv.net/member_illust.php?mode=medium&amp;amp;illust_id=61057871"><img src="./test.bmp" alt="origin"></a></p>
@@ -549,37 +565,19 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p>Use this lib, I have made the following images:</p>
 
-<h3 id="toc_2">Gray</h3>
+<h3 id="toc_5">Gray</h3>
 
 <p><img src="./out_gray.bmp" alt="gray"></p>
 
-<h3 id="toc_3">Binary</h3>
+<h3 id="toc_6">Binary</h3>
 
 <p><img src="./out_binary.bmp" alt="binary"></p>
 
-<h3 id="toc_4">Channel R</h3>
-
-<p><img src="./out_channel_r.bmp" alt="channel_r"></p>
-
-<h3 id="toc_5">Channel G</h3>
-
-<p><img src="./out_channel_g.bmp" alt="channel_g"></p>
-
-<h3 id="toc_6">Channel B</h3>
-
-<p><img src="./out_channel_b.bmp" alt="channel_b"></p>
-
-<h3 id="toc_7">Mosaic</h3>
-
-<p><img src="./out_block_mosaic.bmp" alt="mosaic2"></p>
-
-<p><img src="./out_mosaic.bmp" alt="mosaic"></p>
-
-<h3 id="toc_8">Color inverse</h3>
+<h3 id="toc_7">Color inverse</h3>
 
 <p><img src="./out_inverse.bmp" alt="inverse"></p>
 
-<h3 id="toc_9">Histogram graph</h3>
+<h3 id="toc_8">Histogram graph</h3>
 
 <p><img src="./out_histogram_r.bmp" alt="histogram_r"></p>
 
@@ -588,6 +586,11 @@ div.prism-show-language > div.prism-show-language-label {
 <p><img src="./out_histogram_b.bmp" alt="histogram_b"></p>
 
 <p><img src="./out_histogram.bmp" alt="histogram"></p>
+
+<h3 id="toc_9">Mosaic</h3>
+
+<p><img src="./out_block_mosaic.bmp" alt="block mosaic">
+<img src="./out_mosaic.bmp" alt="mosaic"></p>
 
 <h2 id="toc_10">Data Format</h2>
 
@@ -616,17 +619,6 @@ int tlb_save_bmp(const char *file_name, tlb_image_t * image);
 
 /* print basic info of a bmp file */
 int tlb_print_bmp_info(const char *file_name);
-
-/* pixel operation APIs */
-
-/* get a array of the pixel */
-uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y);
-
-/* print a pixel with specific color */
-int tlp_print_pixel(tlb_image_t * image, uint32_t x, uint32_t y, uint32_t color);
-
-/* print a pixel with specific color */
-int tlp_print_pixel_ch(tlb_image_t * image, uint32_t x, uint32_t y, uint8_t channel, uint8_t val);
 
 /* Image operation APIs */
 
