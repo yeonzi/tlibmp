@@ -63,10 +63,6 @@ Use this lib, I have made the following images:
 
 ![mosaic](http://www.short-circuits.org/tlibmp/out_mosaic.bmp)
 
-### Color inverse
-
-![inverse](http://www.short-circuits.org/tlibmp/out_inverse.bmp)
-
 ### Histogram graph
 
 ![histogram_r](http://www.short-circuits.org/tlibmp/out_histogram_r.bmp)
@@ -76,3 +72,53 @@ Use this lib, I have made the following images:
 ![histogram_b](http://www.short-circuits.org/tlibmp/out_histogram_b.bmp)
 
 ![histogram](http://www.short-circuits.org/tlibmp/out_histogram.bmp)
+
+### Convolution
+
+In mathematics convolution is a mathematical operation on two functions to produce a third function. 
+
+As picture can treated as a function, we can run convolution operation on a picture, and this will produce magical effect
+
+Firstly, let's try a Gaussian function, the Matrix(convolution core) is:
+
+|     |     |     |     |     |     |     |
+|-----|-----|-----|-----|-----|-----|-----|
+|     |  1.0|  4.0|  7.0|  4.0|  1.0|     |
+|     |  4.0| 16.0| 26.0| 16.6|  4.0|     |
+|     |  7.0| 26.0| 41.0| 26,0|  7.0|     |
+|     |  4.0| 16.0| 26.0| 16.6|  4.0|     |
+|     |  1.0|  4.0|  7.0|  4.0|  1.0|     |
+|     |     |     |     |     |     |     |
+
+and this matrix produce this picture:
+
+![gaussian](http://www.short-circuits.org/tlibmp/out_conv0.bmp)
+
+and then, let's try a matrix like this:
+
+|     |     |     |     |     |
+|-----|-----|-----|-----|-----|
+|     | -1.0| -1.0|  0.0|     |
+|     | -1.0|  0.0|  1.0|     |
+|     |  0.0|  1.0|  1.0|     |
+|     |     |     |     |     |
+
+easily to find that this matrix will produce a gray picture, just like a sculpture:
+
+![gaussian](http://www.short-circuits.org/tlibmp/out_conv1.bmp)
+
+a matrix like this will stress the edge of the picture:
+
+|     |     |     |     |     |
+|-----|-----|-----|-----|-----|
+|     |  0.0| -1.0|  0.0|     |
+|     | -1.0|  5.0| -1.0|     |
+|     |  0.0| -1.0|  0.0|     |
+|     |     |     |     |     |
+
+
+![stress](http://www.short-circuits.org/tlibmp/out_conv2.bmp)
+
+To make a color inverse, you can use a matrix with the summary small than zero:
+
+![inverse](http://www.short-circuits.org/tlibmp/out_inverse.bmp)
