@@ -90,7 +90,12 @@ typedef struct {
 #define CHANNEL_G 1
 #define CHANNEL_B 2
 #define CHANNEL_A 3
+
 #define CHANNEL_CNT 4
+#define CHANNEL_ALL 4
+
+#define TLB_BORDER_EMPTY        0
+#define TLB_BORDER_REPLICATE    1
 
 /* tlibmp bitmap struct */
 typedef struct {
@@ -98,6 +103,13 @@ typedef struct {
     uint32_t height;
     uint8_t  *data;             /* Data format: [RGBA]    */
 }tlb_image_t;
+
+typedef struct {
+    uint8_t size;
+    uint8_t bias;
+    double  div;
+    double  *data;
+}tlb_core_t;
 
 typedef uint32_t color_t;
 
@@ -133,6 +145,10 @@ int tlb_draw_line(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, ui
 
 int tlb_draw_triangle(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, color_t color);
 
+tlb_core_t * tlb_core_new(uint8_t size);
+int __cdecl tlb_core_load(tlb_core_t * core, ...);
+int tlb_core_standard(tlb_core_t * core);
+
 /* Image operation APIs */
 
 /* new image */
@@ -144,6 +160,10 @@ void tlb_img_free(tlb_image_t * image);
 /* make a copy of a image */
 tlb_image_t * tlb_img_copy(tlb_image_t * image);
 tlb_image_t * tlb_img_chop(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1);
+int tlb_img_paste(tlb_image_t * src, tlb_image_t * dst, uint32_t x0, uint32_t y0);
+tlb_image_t * tlb_img_make_border(tlb_image_t * image, uint32_t brsize, uint8_t type);
+tlb_image_t * tlb_img_conv_r(tlb_image_t * image, tlb_core_t * core, uint8_t channel);
+tlb_image_t * tlb_img_conv(tlb_image_t * image, tlb_core_t * core, uint8_t channel);
 
 int tlb_img_inverse(tlb_image_t * image);
 int tlb_img_gray(tlb_image_t * image);
@@ -158,6 +178,5 @@ tlb_image_t * tlb_img_channel(tlb_image_t * image, uint8_t channel);
 
 tlb_image_t * tlb_img_mosaic(tlb_image_t * image, uint32_t granularity);
 tlb_image_t * tlb_block_mosaic(tlb_image_t * image, uint32_t offset_x, uint32_t offset_y, uint32_t length_x, uint32_t length_y, uint32_t granularity);
-
 
 #endif

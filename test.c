@@ -114,7 +114,8 @@ int triangle_test(const char * bmpfile){
 int main(void)
 {
     tlb_image_t * origin = NULL;
-    tlb_image_t * image = NULL;
+    tlb_image_t * image  = NULL;
+    tlb_core_t  * conv_core = NULL;
     tlb_print_bmp_info("test.bmp");
     origin = tlb_load_bmp("test.bmp");
 
@@ -186,6 +187,19 @@ int main(void)
     line_test("out_lines.bmp");
 
     triangle_test("out_triangle.bmp");
+
+    conv_core = tlb_core_new(5);
+    tlb_core_load(conv_core,\
+        1.0,  4.0,  7.0,  4.0, 1.0,\
+        4.0, 16.0, 26.0, 16.0, 4.0,\
+        7.0, 26.0, 41.0, 26.0, 7.0,\
+        4.0, 16.0, 26.0, 16.0, 4.0,\
+        1.0,  4.0,  7.0,  4.0, 1.0);
+    tlb_core_standard(conv_core);
+
+    image = tlb_img_conv(origin, conv_core, CHANNEL_ALL);
+    tlb_save_bmp("./out_conv.bmp", image);
+    tlb_img_free(image);
 
     return 0;
 }

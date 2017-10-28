@@ -22,6 +22,7 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <math.h>
 
 #define uint16_LE(str)   (uint16_t)((uint16_t)(str[1] << 0) + (uint16_t)(str[0] << 8))
@@ -379,6 +380,91 @@ int tlb_print_bmp_info(const char *file_name)
     return TLB_OK;
 }
 
+/**************/
+/* conv utils */
+/**************/
+tlb_core_t * tlb_core_new(uint8_t size)
+{
+    tlb_core_t * core = NULL;
+    int16_t real_size = 0;
+
+    if (size<=1){
+        fprintf(stderr, "Error: Convolution core too small.\n");
+        return NULL;
+    }
+
+    real_size = size * size;
+
+    core = malloc(sizeof(tlb_core_t));
+
+    /* malloc exceptional */
+    if(core == NULL){
+        fprintf(stderr, "Error: Can not malloc for new object.\n");
+        return NULL;
+    }
+
+    /* init */
+    core->size = size;
+    core->div  = 0.0;
+    core->data = malloc(real_size*sizeof(double));
+
+    /* malloc exceptional */
+    if(core->data == NULL){
+        fprintf(stderr, "Error: Can not malloc for new object.\n");
+        return NULL;
+    }
+
+    for (real_size = real_size - 1; real_size >= 0; real_size--){
+        core->data[real_size] = 0.0;
+    }
+
+    return core;
+}
+
+int __cdecl tlb_core_load(tlb_core_t * core, ...)
+{
+    va_list  sp;
+    uint16_t cnt;
+    uint16_t size = core->size*core->size;
+
+    va_start(sp, core);
+    for (cnt = 0; cnt < size; cnt++){
+        core->data[cnt] = va_arg(sp, double);
+    }
+    va_end(sp);
+    return 0;
+}
+
+double tlb_core_element(tlb_core_t * core, uint8_t x, uint8_t y)
+{
+    uint16_t p;
+    p = core->size * (core->size - y - 1) + x;
+    return core->data[p];
+}
+
+int tlb_core_standard(tlb_core_t * core)
+{
+    uint16_t real_size;
+    uint16_t index;
+    double   sum = 0;
+    real_size = core->size * core->size;
+    for(index = 0; index < real_size; index++){
+        sum +=  core->data[index];
+    }
+    if(sum < -0.000001){
+        core->div  = -sum;
+        core->bias = 255;
+    }else if(sum < 0.000001){
+        /* core->div == 0 */
+        core->div  = 1.0;
+        core->bias = 128;
+    }else{
+        core->div = sum;
+    }
+
+    return TLB_OK;
+}
+
 /***************/
 /* Image utils */
 /***************/
@@ -486,7 +572,7 @@ tlb_image_t * tlb_img_chop(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32
 
     /* adjust for large area */
     x1 = (x1>image->width)  ? image->width  : x1 ;
-    y1 = (x1>image->height) ? image->height : y1 ;
+    y1 = (y1>image->height) ? image->height : y1 ;
 
     chop = tlb_img_new(x1-x0, y1-y0, 0);
 
@@ -497,6 +583,227 @@ tlb_image_t * tlb_img_chop(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32
     }
 
     return chop;
+}
+
+int tlb_img_paste(tlb_image_t * src, tlb_image_t * dst, uint32_t x0, uint32_t y0){
+    uint32_t xs,ys;
+    uint32_t xd,yd;
+    /* check if NULL pointer */
+    if(dst==NULL||src==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) image.\n",__FUNCTION__);
+        return TLB_ERROR;
+    }
+
+    ys = 0;
+    yd = y0;
+
+    while((ys<src->height)&&(yd<dst->height)){
+
+        xs = 0;
+        xd = x0;
+
+        while((xs<src->width)&&(xd<dst->width)){
+            /* copy by uint32_t */
+            *(uint32_t*)tlb_pixel(dst, xd, yd) = *(uint32_t*)tlb_pixel(src, xs, ys);
+
+            xs++;
+            xd++;
+        }
+
+        ys++;
+        yd++;
+    }
+
+    return TLB_OK;
+}
+
+tlb_image_t * tlb_img_make_border(tlb_image_t * image, uint32_t brsize, uint8_t type){
+    tlb_image_t * border = NULL;
+    uint32_t x,y;
+    /* check if NULL pointer */
+    if(image==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) image.\n",__FUNCTION__);
+        return NULL;
+    }
+    /* if brsize==0 it degenerate to tlb_img_copy */
+    if(brsize==0){
+        return tlb_img_copy(image);
+    }
+
+    border = tlb_img_new(image->width+(2*brsize),image->height+(2*brsize),0);
+
+    tlb_img_paste(image, border, brsize, brsize);
+
+    if(type == TLB_BORDER_EMPTY){
+        return border;
+    }
+
+    if(type == TLB_BORDER_REPLICATE){
+
+        /* up and down */
+        for(x = brsize; x < image->width+brsize; x++){
+            for(y = 0; y < brsize; y++){
+                *(uint32_t*)tlb_pixel(border, x, y) =\
+                *(uint32_t*)tlb_pixel(border, x, brsize);
+                *(uint32_t*)tlb_pixel(border, x, border->height - y - 1) =\
+                *(uint32_t*)tlb_pixel(border, x, border->height - brsize - 1);
+            }
+        }
+
+        /* left and right */
+        for(y = brsize; y < image->height+brsize; y++){
+            for(x = 0; x < brsize; x++){
+                *(uint32_t*)tlb_pixel(border, x, y) =\
+                *(uint32_t*)tlb_pixel(border, brsize, y);
+                *(uint32_t*)tlb_pixel(border, border->width - x - 1, y) =\
+                *(uint32_t*)tlb_pixel(border, border->width - brsize - 1, y);
+            }
+        }
+
+        /* corner */
+        for(y = 0; y < brsize; y++){
+            for(x = 0; x < brsize; x++){
+                *(uint32_t*)tlb_pixel(border, x, y) =\
+                *(uint32_t*)tlb_pixel(border, brsize, brsize);
+                *(uint32_t*)tlb_pixel(border, border->width-x-1, y) =\
+                *(uint32_t*)tlb_pixel(border, border->width-brsize-1, brsize);
+                *(uint32_t*)tlb_pixel(border, x, border->height-y-1) =\
+                *(uint32_t*)tlb_pixel(border, brsize, border->height-brsize-1);
+                *(uint32_t*)tlb_pixel(border, border->width-x-1, border->height-y-1) =\
+                *(uint32_t*)tlb_pixel(border, border->width-brsize-1, border->height-brsize-1);
+            }
+        }
+        return border;
+    }
+
+    fprintf(stderr, "%s(): need to specific a border type, treated as TLB_BORDER_EMPTY.\n",__FUNCTION__);
+    return border;
+}
+
+tlb_image_t * tlb_img_conv_r(tlb_image_t * image, tlb_core_t * core, uint8_t channel){
+    tlb_image_t * conv = NULL;
+    uint32_t x0;
+    uint32_t y0;
+    uint32_t x1;
+    uint32_t y1;
+    uint32_t d;
+    double   tmp[4];
+    if(image==NULL||core==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) image.\n",__FUNCTION__);
+        return NULL;
+    }
+    d = (core->size / 2);
+
+    conv = tlb_img_copy(image);
+
+    if(channel!=CHANNEL_ALL){
+        for(x0 = 0; x0<image->width-core->size; x0++){
+            for(y0 = 0; y0<image->height-core->size; y0++){
+                /* ergodic pixel in image */
+                tmp[0] = 0;
+                for(x1 = 0; x1<core->size; x1++){
+                    for(y1 = 0; y1<core->size; y1++){
+                        tmp[0] += tlb_core_element(core, x1, y1) * (tlb_pixel(image, x0+x1, y0+y1)[channel]);
+                    }
+                }
+                tmp[0] = tmp[0]/core->div + core->bias;
+
+                if (tmp[0]>255) tmp[0] = 255;
+                if (tmp[0]<0)   tmp[0] = 0;
+                tlb_pixel(conv, x0+d, y0+d)[channel] = tmp[0];
+                
+            }
+        }
+    }else{
+        for(x0 = 0; x0<image->width-core->size; x0++){
+            for(y0 = 0; y0<image->height-core->size; y0++){
+                /* ergodic pixel in image */
+                tmp[CHANNEL_R] = 0;
+                tmp[CHANNEL_G] = 0;
+                tmp[CHANNEL_B] = 0;
+                tmp[CHANNEL_A] = 0;
+
+                for(x1 = 0; x1<core->size; x1++){
+                    for(y1 = 0; y1<core->size; y1++){
+                        tmp[CHANNEL_R] += tlb_core_element(core, x1, y1) * (tlb_pixel(image, x0+x1, y0+y1)[CHANNEL_R]);
+                        tmp[CHANNEL_G] += tlb_core_element(core, x1, y1) * (tlb_pixel(image, x0+x1, y0+y1)[CHANNEL_G]);
+                        tmp[CHANNEL_B] += tlb_core_element(core, x1, y1) * (tlb_pixel(image, x0+x1, y0+y1)[CHANNEL_B]);
+                        tmp[CHANNEL_A] += tlb_core_element(core, x1, y1) * (tlb_pixel(image, x0+x1, y0+y1)[CHANNEL_A]);
+                    }
+                }
+
+                tmp[CHANNEL_R] = tmp[CHANNEL_R]/core->div + core->bias;
+                tmp[CHANNEL_G] = tmp[CHANNEL_G]/core->div + core->bias;
+                tmp[CHANNEL_B] = tmp[CHANNEL_B]/core->div + core->bias;
+                tmp[CHANNEL_A] = tmp[CHANNEL_A]/core->div + core->bias;
+
+                if (tmp[CHANNEL_R]>255) tmp[CHANNEL_R] = 255;
+                if (tmp[CHANNEL_G]>255) tmp[CHANNEL_G] = 255;
+                if (tmp[CHANNEL_B]>255) tmp[CHANNEL_B] = 255;
+                if (tmp[CHANNEL_A]>255) tmp[CHANNEL_A] = 255;
+
+                if (tmp[CHANNEL_R]<0)   tmp[CHANNEL_R] = 0;
+                if (tmp[CHANNEL_G]<0)   tmp[CHANNEL_G] = 0;
+                if (tmp[CHANNEL_B]<0)   tmp[CHANNEL_B] = 0;
+                if (tmp[CHANNEL_A]<0)   tmp[CHANNEL_A] = 0;
+
+                tlb_pixel(conv, x0+d, y0+d)[CHANNEL_R] = tmp[CHANNEL_R];
+                tlb_pixel(conv, x0+d, y0+d)[CHANNEL_G] = tmp[CHANNEL_G];
+                tlb_pixel(conv, x0+d, y0+d)[CHANNEL_B] = tmp[CHANNEL_B];
+                tlb_pixel(conv, x0+d, y0+d)[CHANNEL_A] = tmp[CHANNEL_A];
+                
+            }
+        }
+    }
+    return conv;
+}
+
+tlb_image_t * tlb_img_conv(tlb_image_t * image, tlb_core_t * core, uint8_t channel){
+    tlb_image_t * border = NULL;
+    tlb_image_t * r_conv = NULL;
+    tlb_image_t * c_conv = NULL;
+
+    if(image==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) image.\n",__FUNCTION__);
+        return NULL;
+    }
+
+    if(core==NULL){
+        fprintf(stderr, "%s(): Cannot operation with (null) conv core.\n",__FUNCTION__);
+        return NULL;
+    }
+
+    if(core->div==0){
+        fprintf(stderr, "%s(): Illegal conv core.\n",__FUNCTION__);
+        return NULL;
+    }
+
+    border = tlb_img_make_border(image, core->size, TLB_BORDER_REPLICATE);
+
+    if(border==NULL){
+        fprintf(stderr, "%s(): Cannot do copy and make border operation.\n",__FUNCTION__);
+        return NULL;
+    }
+
+    r_conv = tlb_img_conv_r(border, core, channel);
+
+    tlb_img_free(border);
+
+    if(r_conv==NULL){
+        fprintf(stderr, "%s(): Cannot do convolution operation.\n",__FUNCTION__);
+        return NULL;
+    }
+
+    c_conv = tlb_img_chop(r_conv, core->size, core->size, image->width + core->size, image->height + core->size);
+
+    tlb_img_free(r_conv);
+
+    if(c_conv==NULL){
+        fprintf(stderr, "%s(): Cannot do chop operation.\n",__FUNCTION__);
+        return NULL;
+    }
+
+    return c_conv;
 }
 
 /*******************/
