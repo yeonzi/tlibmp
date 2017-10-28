@@ -538,7 +538,7 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p><a href="https://github.com/yeonzi/tlibmp">View on Github</a></p>
 
-<h2 id="toc_1">Basic</h2>
+<h2 id="toc_1">Overview</h2>
 
 <p>It was a lib that can create bmp file, and print in it.</p>
 
@@ -577,11 +577,7 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p><img src="./out_binary.bmp" alt="binary"></p>
 
-<h3 id="toc_8">Color inverse</h3>
-
-<p><img src="./out_inverse.bmp" alt="inverse"></p>
-
-<h3 id="toc_9">Histogram graph</h3>
+<h3 id="toc_8">Histogram graph</h3>
 
 <p><img src="./out_histogram_r.bmp" alt="histogram_r"></p>
 
@@ -591,88 +587,195 @@ div.prism-show-language > div.prism-show-language-label {
 
 <p><img src="./out_histogram.bmp" alt="histogram"></p>
 
-<h3 id="toc_10">Mosaic</h3>
+<h3 id="toc_9">Mosaic</h3>
 
 <p><img src="./out_block_mosaic.bmp" alt="block mosaic">
 <img src="./out_mosaic.bmp" alt="mosaic"></p>
 
-<h2 id="toc_11">Data Format</h2>
+<h3 id="toc_10">Convolution</h3>
 
-<p>there are only one format for the bitmap:</p>
+<p>In mathematics convolution is a mathematical operation on two functions to produce a third function. </p>
 
-<div><pre class="line-numbers"><code class="language-c">/* tlibmp bitmap struct */
-typedef struct {
-    uint32_t width;
-    uint32_t height;
-    uint8_t  *data;  /* Data format: [RGBA] */
-}tlb_image_t;</code></pre></div>
+<p>As picture can treated as a function, we can run convolution operation on a picture, and this will produce magical effect</p>
 
-<p>as the content of the struct may change later, you should <strong>never</strong> call the element directly.</p>
+<p>Firstly, let&#39;s try a Gaussian function, the Matrix(convolution core) is:</p>
 
-<h2 id="toc_12">APIs</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
 
-<h3 id="toc_13">Summary</h3>
+<tbody>
+<tr>
+<td></td>
+<td>1.0</td>
+<td>4.0</td>
+<td>7.0</td>
+<td>4.0</td>
+<td>1.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>4.0</td>
+<td>16.0</td>
+<td>26.0</td>
+<td>16.6</td>
+<td>4.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>7.0</td>
+<td>26.0</td>
+<td>41.0</td>
+<td>26,0</td>
+<td>7.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>4.0</td>
+<td>16.0</td>
+<td>26.0</td>
+<td>16.6</td>
+<td>4.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>1.0</td>
+<td>4.0</td>
+<td>7.0</td>
+<td>4.0</td>
+<td>1.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
-<div><pre class="line-numbers"><code class="language-c">/* BMP operation APIs */
+<p>and this matrix produce this picture:</p>
 
-/* load a bmp frome file */
-tlb_image_t * tlb_load_bmp(const char *file_name);
+<p><img src="./out_conv0.bmp" alt="gaussian"></p>
 
-/* save bmp to file by default settings */
-int tlb_save_bmp(const char *file_name, tlb_image_t * image);
+<p>and then, let&#39;s try a matrix like this:</p>
 
-/* print basic info of a bmp file */
-int tlb_print_bmp_info(const char *file_name);
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
 
-/* Image operation APIs */
+<tbody>
+<tr>
+<td></td>
+<td>-1.0</td>
+<td>-1.0</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>-1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>0.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
-/* new image */
-tlb_image_t * tlb_img_new(uint32_t width, uint32_t height, uint32_t bgcolor);
+<p>easily to find that this matrix will produce a gray picture, just like a sculpture:</p>
 
-/* free image struct */
-void tlb_img_free(tlb_image_t * image);
+<p><img src="./out_conv1.bmp" alt="gaussian"></p>
 
-/* make a copy of a image */
-tlb_image_t * tlb_img_copy(tlb_image_t * image);
+<p>a matrix like this will stress the edge of the picture:</p>
 
-/* inverse the color of the image */
-int tlb_img_inverse(tlb_image_t * image);
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
 
-/* trans the image to gray scale graph */
-int tlb_img_gray(tlb_image_t * image);
+<tbody>
+<tr>
+<td></td>
+<td>0.0</td>
+<td>-1.0</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>-1.0</td>
+<td>5.0</td>
+<td>-1.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>0.0</td>
+<td>-1.0</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
-/* binary this graph with threshold */
-int tlb_img_binary(tlb_image_t * image, uint8_t threshold);
+<p><img src="./out_conv2.bmp" alt="stress"></p>
 
-/* create a histogram of a channel */
-tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel);
+<p>To make a color inverse, you can use a matrix with the summary small than zero:</p>
 
-/* create a histogram graph of all visible channel */
-tlb_image_t * tlb_img_histogram(tlb_image_t * image);</code></pre></div>
+<p><img src="./out_inverse.bmp" alt="inverse"></p>
 
-<h3 id="toc_14">Detail</h3>
-
-<h4 id="toc_15">tlb_image_t * tlb_load_bmp(const char *file_name);</h4>
-
-<h5 id="toc_16">Entry parameters：</h5>
-
-<p><code>const char *file_name</code> : the path of the file to load, just like fopen. ( In fact, it was passed directly to fopen(3) )</p>
-
-<h5 id="toc_17">Return：</h5>
-
-<p>This fucntion will return a pointer to a struct with image loaded.</p>
-
-<h5 id="toc_18">Usage reference:</h5>
-
-<div><pre class="line-numbers"><code class="language-c">/* a NULL pointer of the object */
-tlb_image_t * image = NULL;
-
-/* load image from test.bmp */
-image = tlb_load_bmp(&quot;test.bmp&quot;);
-
-/* and the image will loaded to val image */</code></pre></div>
-
-<p>I Guess no one is still read it, and I am so lazy,</p>
+<h2 id="toc_11">That&#39;s all</h2>
 
 <p>if you a interesting with this, please give me a star and help me to write document</p>
 
@@ -685,20 +788,22 @@ var _self="undefined"!=typeof window?window:"undefined"!=typeof WorkerGlobalScop
 </script>
 
 <script type="text/javascript">
-Prism.languages.clike={comment:[{pattern:/(^|[^\\])\/\*[\w\W]*?\*\//,lookbehind:!0},{pattern:/(^|[^\\:])\/\/.*/,lookbehind:!0}],string:{pattern:/(["'])(\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,greedy:!0},"class-name":{pattern:/((?:\b(?:class|interface|extends|implements|trait|instanceof|new)\s+)|(?:catch\s+\())[a-z0-9_\.\\]+/i,lookbehind:!0,inside:{punctuation:/(\.|\\)/}},keyword:/\b(if|else|while|do|for|return|in|instanceof|function|new|try|throw|catch|finally|null|break|continue)\b/,"boolean":/\b(true|false)\b/,"function":/[a-z0-9_]+(?=\()/i,number:/\b-?(?:0x[\da-f]+|\d*\.?\d+(?:e[+-]?\d+)?)\b/i,operator:/--?|\+\+?|!=?=?|<=?|>=?|==?=?|&&?|\|\|?|\?|\*|\/|~|\^|%/,punctuation:/[{}[\];(),.:]/};
-</script>
-
-<script type="text/javascript">
-Prism.languages.c=Prism.languages.extend("clike",{keyword:/\b(asm|typeof|inline|auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while)\b/,operator:/\-[>-]?|\+\+?|!=?|<<?=?|>>?=?|==?|&&?|\|?\||[~^%?*\/]/,number:/\b-?(?:0x[\da-f]+|\d*\.?\d+(?:e[+-]?\d+)?)[ful]*\b/i}),Prism.languages.insertBefore("c","string",{macro:{pattern:/(^\s*)#\s*[a-z]+([^\r\n\\]|\\.|\\(?:\r\n?|\n))*/im,lookbehind:!0,alias:"property",inside:{string:{pattern:/(#\s*include\s*)(<.+?>|("|')(\\?.)+?\3)/,lookbehind:!0},directive:{pattern:/(#\s*)\b(define|elif|else|endif|error|ifdef|ifndef|if|import|include|line|pragma|undef|using)\b/,lookbehind:!0,alias:"keyword"}}},constant:/\b(__FILE__|__LINE__|__DATE__|__TIME__|__TIMESTAMP__|__func__|EOF|NULL|stdin|stdout|stderr)\b/}),delete Prism.languages.c["class-name"],delete Prism.languages.c["boolean"];
-</script>
-
-<script type="text/javascript">
 !function(){"undefined"!=typeof self&&self.Prism&&self.document&&Prism.hooks.add("complete",function(e){if(e.code){var t=e.element.parentNode,s=/\s*\bline-numbers\b\s*/;if(t&&/pre/i.test(t.nodeName)&&(s.test(t.className)||s.test(e.element.className))&&!e.element.querySelector(".line-numbers-rows")){s.test(e.element.className)&&(e.element.className=e.element.className.replace(s,"")),s.test(t.className)||(t.className+=" line-numbers");var n,a=e.code.match(/\n(?!$)/g),l=a?a.length+1:1,m=new Array(l+1);m=m.join("<span></span>"),n=document.createElement("span"),n.className="line-numbers-rows",n.innerHTML=m,t.hasAttribute("data-start")&&(t.style.counterReset="linenumber "+(parseInt(t.getAttribute("data-start"),10)-1)),e.element.appendChild(n)}}})}();
 </script>
 
 <script type="text/javascript">
 !function(){if("undefined"!=typeof self&&self.Prism&&self.document){var e={html:"HTML",xml:"XML",svg:"SVG",mathml:"MathML",css:"CSS",clike:"C-like",javascript:"JavaScript",abap:"ABAP",actionscript:"ActionScript",apacheconf:"Apache Configuration",apl:"APL",applescript:"AppleScript",asciidoc:"AsciiDoc",aspnet:"ASP.NET (C#)",autoit:"AutoIt",autohotkey:"AutoHotkey",basic:"BASIC",csharp:"C#",cpp:"C++",coffeescript:"CoffeeScript","css-extras":"CSS Extras",fsharp:"F#",glsl:"GLSL",http:"HTTP",inform7:"Inform 7",json:"JSON",latex:"LaTeX",lolcode:"LOLCODE",matlab:"MATLAB",mel:"MEL",nasm:"NASM",nginx:"nginx",nsis:"NSIS",objectivec:"Objective-C",ocaml:"OCaml",parigp:"PARI/GP",php:"PHP","php-extras":"PHP Extras",powershell:"PowerShell",jsx:"React JSX",rest:"reST (reStructuredText)",sas:"SAS",sass:"Sass (Sass)",scss:"Sass (Scss)",sql:"SQL",typescript:"TypeScript",vhdl:"VHDL",vim:"vim",wiki:"Wiki markup",yaml:"YAML"};Prism.hooks.add("before-highlight",function(s){var a=s.element.parentNode;if(a&&/pre/i.test(a.nodeName)){var t,i,r=a.getAttribute("data-language")||e[s.language]||s.language.substring(0,1).toUpperCase()+s.language.substring(1),l=a.previousSibling;l&&/\s*\bprism-show-language\b\s*/.test(l.className)&&l.firstChild&&/\s*\bprism-show-language-label\b\s*/.test(l.firstChild.className)?i=l.firstChild:(t=document.createElement("div"),i=document.createElement("div"),i.className="prism-show-language-label",t.className="prism-show-language",t.appendChild(i),a.parentNode.insertBefore(t,a)),i.innerHTML=r}})}}();
 </script>
+
+ <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-79443019-2', 'auto');
+      ga('send', 'pageview');
+</script>
+
 
 
 </body>

@@ -9,7 +9,7 @@ A tiny libary that can read/write/edit .BMP files from disk
 
 [View on Github](https://github.com/yeonzi/tlibmp)
 
-## Basic
+## Overview
 
 It was a lib that can create bmp file, and print in it.
 
@@ -45,10 +45,6 @@ Use this lib, I have made the following images:
 
 ![binary](./out_binary.bmp)
 
-### Color inverse
-
-![inverse](./out_inverse.bmp)
-
 ### Histogram graph
 
 ![histogram_r](./out_histogram_r.bmp)
@@ -64,85 +60,58 @@ Use this lib, I have made the following images:
 ![block mosaic](./out_block_mosaic.bmp)
 ![mosaic](./out_mosaic.bmp)
 
-## Data Format
+### Convolution
 
-there are only one format for the bitmap:
+In mathematics convolution is a mathematical operation on two functions to produce a third function. 
 
-```c
-/* tlibmp bitmap struct */
-typedef struct {
-    uint32_t width;
-    uint32_t height;
-    uint8_t  *data;  /* Data format: [RGBA] */
-}tlb_image_t;
-```
+As picture can treated as a function, we can run convolution operation on a picture, and this will produce magical effect
 
-as the content of the struct may change later, you should **never** call the element directly.
+Firstly, let's try a Gaussian function, the Matrix(convolution core) is:
 
-## APIs
+|     |     |     |     |     |     |     |
+|-----|-----|-----|-----|-----|-----|-----|
+|     |  1.0|  4.0|  7.0|  4.0|  1.0|     |
+|     |  4.0| 16.0| 26.0| 16.6|  4.0|     |
+|     |  7.0| 26.0| 41.0| 26,0|  7.0|     |
+|     |  4.0| 16.0| 26.0| 16.6|  4.0|     |
+|     |  1.0|  4.0|  7.0|  4.0|  1.0|     |
+|     |     |     |     |     |     |     |
 
-### Summary
-```c
-/* BMP operation APIs */
+and this matrix produce this picture:
 
-/* load a bmp frome file */
-tlb_image_t * tlb_load_bmp(const char *file_name);
+![gaussian](./out_conv0.bmp)
 
-/* save bmp to file by default settings */
-int tlb_save_bmp(const char *file_name, tlb_image_t * image);
+and then, let's try a matrix like this:
 
-/* print basic info of a bmp file */
-int tlb_print_bmp_info(const char *file_name);
+|     |     |     |     |     |
+|-----|-----|-----|-----|-----|
+|     | -1.0| -1.0|  0.0|     |
+|     | -1.0|  0.0|  1.0|     |
+|     |  0.0|  1.0|  1.0|     |
+|     |     |     |     |     |
 
-/* Image operation APIs */
+easily to find that this matrix will produce a gray picture, just like a sculpture:
 
-/* new image */
-tlb_image_t * tlb_img_new(uint32_t width, uint32_t height, uint32_t bgcolor);
+![gaussian](./out_conv1.bmp)
 
-/* free image struct */
-void tlb_img_free(tlb_image_t * image);
+a matrix like this will stress the edge of the picture:
 
-/* make a copy of a image */
-tlb_image_t * tlb_img_copy(tlb_image_t * image);
+|     |     |     |     |     |
+|-----|-----|-----|-----|-----|
+|     |  0.0| -1.0|  0.0|     |
+|     | -1.0|  5.0| -1.0|     |
+|     |  0.0| -1.0|  0.0|     |
+|     |     |     |     |     |
 
-/* inverse the color of the image */
-int tlb_img_inverse(tlb_image_t * image);
 
-/* trans the image to gray scale graph */
-int tlb_img_gray(tlb_image_t * image);
+![stress](./out_conv2.bmp)
 
-/* binary this graph with threshold */
-int tlb_img_binary(tlb_image_t * image, uint8_t threshold);
+To make a color inverse, you can use a matrix with the summary small than zero:
 
-/* create a histogram of a channel */
-tlb_image_t * tlb_img_ch_histogram(tlb_image_t * image, uint8_t channel);
+![inverse](./out_inverse.bmp)
 
-/* create a histogram graph of all visible channel */
-tlb_image_t * tlb_img_histogram(tlb_image_t * image);
-```
 
-### Detail
-
-#### tlb\_image\_t * tlb\_load\_bmp(const char *file\_name);
-
-##### Entry parameters：
-`const char *file_name` : the path of the file to load, just like fopen. ( In fact, it was passed directly to fopen(3) )
-
-##### Return：
-This fucntion will return a pointer to a struct with image loaded.
-
-##### Usage reference:
-```c
-/* a NULL pointer of the object */
-tlb_image_t * image = NULL;
-
-/* load image from test.bmp */
-image = tlb_load_bmp("test.bmp");
-
-/* and the image will loaded to val image */
-```
-
-I Guess no one is still read it, and I am so lazy,
+## That's all
 
 if you a interesting with this, please give me a star and help me to write document
 
