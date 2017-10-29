@@ -148,6 +148,7 @@ int tlb_draw_triangle(tlb_image_t * image, uint32_t x0, uint32_t y0, uint32_t x1
 tlb_core_t * tlb_core_new(uint8_t size);
 int __cdecl tlb_core_load(tlb_core_t * core, ...);
 int tlb_core_standard(tlb_core_t * core);
+# define tlb_core_element(core,x,y)  core->data[(core->size * y + x)]
 
 /* Image operation APIs */
 

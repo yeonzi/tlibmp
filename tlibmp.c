@@ -435,12 +435,12 @@ int __cdecl tlb_core_load(tlb_core_t * core, ...)
     return 0;
 }
 
-double tlb_core_element(tlb_core_t * core, uint8_t x, uint8_t y)
-{
-    uint16_t p;
-    p = core->size * (core->size - y - 1) + x;
-    return core->data[p];
-}
+// double tlb_core_element(tlb_core_t * core, uint8_t x, uint8_t y)
+// {
+//     uint16_t p;
+//     p = core->size * y + x;
+//     return core->data[p];
+// }
 
 int tlb_core_standard(tlb_core_t * core)
 {
