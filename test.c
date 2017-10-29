@@ -31,7 +31,7 @@ int color_test(const char * bmpfile){
             tlb_pixel_set(image, x, y, tlb_rgb(x,0,y));
         }
     }
-    tlb_save_bmp(bmpfile, image);
+    tlb_save_bmp(image, bmpfile);
     tlb_img_free(image);
     return 0;
 }
@@ -69,7 +69,7 @@ int line_test(const char * bmpfile){
     for(y = 505; y >= 5; y-=50){
         tlb_draw_line(image, 505, 5, x, y, tlb_rgb(255,255,0));
     }
-    tlb_save_bmp(bmpfile, image);
+    tlb_save_bmp(image, bmpfile);
     tlb_img_free(image);
     return 0;
 }
@@ -106,7 +106,7 @@ int triangle_test(const char * bmpfile){
     
     triangle(image,10,10,490,10,250,490,tlb_rgb(255,255,255));
 
-    tlb_save_bmp(bmpfile, image);
+    tlb_save_bmp(image, bmpfile);
     tlb_img_free(image);
     return 0;
 }
@@ -143,43 +143,43 @@ int main(void)
 
     image = tlb_img_copy(origin);
     tlb_img_binary(image,120);
-    tlb_save_bmp("./out_binary.bmp", image);
+    tlb_save_bmp(image, "./out_binary.bmp");
     tlb_img_free(image);
 
     image = tlb_img_histogram(origin);
-    tlb_save_bmp("./out_histogram.bmp", image);
+    tlb_save_bmp(image, "./out_histogram.bmp");
     tlb_img_free(image);
 
     image = tlb_img_ch_histogram(origin,CHANNEL_R);
-    tlb_save_bmp("./out_histogram_r.bmp", image);
+    tlb_save_bmp(image, "./out_histogram_r.bmp");
     tlb_img_free(image);
 
     image = tlb_img_ch_histogram(origin,CHANNEL_G);
-    tlb_save_bmp("./out_histogram_g.bmp", image);
+    tlb_save_bmp(image, "./out_histogram_g.bmp");
     tlb_img_free(image);
 
     image = tlb_img_ch_histogram(origin,CHANNEL_B);
-    tlb_save_bmp("./out_histogram_b.bmp", image);
+    tlb_save_bmp(image, "./out_histogram_b.bmp");
     tlb_img_free(image);
 
     image = tlb_img_channel(origin,CHANNEL_R);
-    tlb_save_bmp("./out_channel_r.bmp", image);
+    tlb_save_bmp(image, "./out_channel_r.bmp");
     tlb_img_free(image);
 
     image = tlb_img_channel(origin,CHANNEL_G);
-    tlb_save_bmp("./out_channel_g.bmp", image);
+    tlb_save_bmp(image, "./out_channel_g.bmp");
     tlb_img_free(image);
 
     image = tlb_img_channel(origin,CHANNEL_B);
-    tlb_save_bmp("./out_channel_b.bmp", image);
+    tlb_save_bmp(image, "./out_channel_b.bmp");
     tlb_img_free(image);
 
     image = tlb_img_mosaic(origin,5);
-    tlb_save_bmp("./out_mosaic.bmp", image);
+    tlb_save_bmp(image, "./out_mosaic.bmp");
     tlb_img_free(image);
 
     image = tlb_block_mosaic(origin, 175, 125, 185, 125, 5);
-    tlb_save_bmp("./out_block_mosaic.bmp", image);
+    tlb_save_bmp(image, "./out_block_mosaic.bmp");
     tlb_img_free(image);
 
     color_test("out_color.bmp");
@@ -198,7 +198,7 @@ int main(void)
     tlb_core_standard(conv_core);
 
     image = tlb_img_conv(origin, conv_core, CHANNEL_ALL);
-    tlb_save_bmp("./out_conv.bmp", image);
+    tlb_save_bmp(image, "./out_conv.bmp");
     tlb_img_free(image);
 
     return 0;

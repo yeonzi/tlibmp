@@ -122,7 +122,7 @@ typedef uint32_t color_t;
 tlb_image_t * tlb_load_bmp(const char *file_name);
 
 /* save bmp to file by default settings */
-int tlb_save_bmp(const char *file_name, tlb_image_t * image);
+int tlb_save_bmp(tlb_image_t * image, const char *file_name);
 
 /* print basic info of a bmp file */
 int tlb_print_bmp_info(const char *file_name);

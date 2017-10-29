@@ -260,7 +260,7 @@ destory:
 /* bmp_format = Windows 3.1x bitmap (424D) */
 /* dib_format = Standard BMP header */
 /* bit_pre_pixel = 24  */
-int tlb_save_bmp(const char *file_name, tlb_image_t * image)
+int tlb_save_bmp(tlb_image_t * image, const char *file_name)
 {
     /* bmp header struct */
     bmp_header_t header;
