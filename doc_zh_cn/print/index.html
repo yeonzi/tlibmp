@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>绘图操作 - tlibmp Document</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "\u7ed8\u56fe\u64cd\u4f5c";
+    var mkdocs_page_input_path = "print.md";
+    var mkdocs_page_url = "/print/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> tlibmp Document</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">第一页</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../quick_start/">快速上手</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">像素与绘图</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../pixel/">像素操作</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">绘图操作</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#_1">画线</a></li>
+    
+
+    <li class="toctree-l3"><a href="#_2">画三角形</a></li>
+    
+
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../image_operation/">基本图像处理</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../apis/">数据结构与API列表</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../about/">关于tlibmp</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">tlibmp Document</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>像素与绘图 &raquo;</li>
+        
+      
+    
+    <li>绘图操作</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1>绘图</h1>
+
+<pre><code>讲道理有像素操作还不够你们玩么
+要啥自行车啊
+</code></pre>
+
+<p><a style="color:black;background:black;" onmouseover="this.style.cssText='color:white;background:black;'" onmouseout="this.style.cssText='color:black;background:black;'" title="你知道的太多了">既然你们非要自行车，那我就给你们一个自行车吧</a></p>
+<h1 id="_1">画线</h1>
+<p>这个tlibmp提供了一个简单而又<del>蹩脚</del>的画线API，示例如下：</p>
+<pre><code class="C">/* test.c */
+#include &quot;tlibmp.h&quot;
+#include &lt;stddef.h&gt;
+
+int main(void)
+{
+    tlb_image_t * image = NULL;
+
+    /* Create new image */
+    image = tlb_img_new(100,100,tlb_rgb(255,255,255));
+
+    /* Draw two black line in this image */
+    tlb_draw_line(image,10,20,90,80,tlb_rgb(0,0,0));
+    tlb_draw_line(image,20,90,80,10,tlb_rgb(0,0,0));
+
+    /* Save Image */
+    tlb_save_bmp(image, &quot;out.bmp&quot;);
+
+    /* Free Object */
+    tlb_img_free(image);
+
+    return 0;
+}
+</code></pre>
+
+<p>效果图：</p>
+<p><img alt="out.bmp" src="../1_0.bmp" /></p>
+<p><a style="color:black;background:black;" onmouseover="this.style.cssText='color:white;background:black;'" onmouseout="this.style.cssText='color:black;background:black;'" title="你知道的太多了">不要问我为啥画个叉</a></p>
+<p>在这个例子中我们用tlb_draw_line()函数来完成画线。</p>
+<p>tlb_draw_line()接受六个参数：</p>
+<ol>
+<li>图像指针</li>
+<li>第一个点的坐标(x0和y0两个参数)</li>
+<li>第二个点的坐标(x1和y1两个参数)</li>
+<li>线条颜色</li>
+</ol>
+<p><a style="color:black;background:black;" onmouseover="this.style.cssText='color:white;background:black;'" onmouseout="this.style.cssText='color:black;background:black;'" title="你知道的太多了">不要问我为啥这么麻烦，我也想坐出租车啊</a></p>
+<p>然后第二个例子就是第一页的图片：</p>
+<p><img alt="lines" src="http://www.short-circuits.org/tlibmp/out_lines.bmp" /></p>
+<p>这个图是我用来测试这个画线API能否正确应对各种方向的线而诞生的。</p>
+<p><del>原谅我的毫无注释而且极其凌乱的垃圾代码</del></p>
+<pre><code class="C">/* test.c */
+#include &quot;tlibmp.h&quot;
+#include &lt;stddef.h&gt;
+
+int main(void)
+{
+    tlb_image_t * image = NULL;
+    int32_t x,y;
+
+    image = tlb_img_new(510,510,tlb_rgb(0,0,255));
+    y = 505;
+    for(x = 5; x &lt; 505; x+=50){
+        tlb_draw_line(image,5,5,x,y,tlb_rgb(255,255,0));
+    }
+    for(y = 505; y &gt;= 5; y-=50){
+        tlb_draw_line(image,5,5,x,y,tlb_rgb(255,255,0));
+    }
+    y = 5;
+    for(x = 5; x &lt; 505; x+=50){
+        tlb_draw_line(image, 5, 505, x, y, tlb_rgb(255,255,0));
+    }
+    for(y = 505; y &gt;= 5; y-=50){
+        tlb_draw_line(image, 5, 505, x, y, tlb_rgb(255,255,0));
+    }
+    y = 5;
+    for(x = 505; x &gt; 5; x-=50){
+        tlb_draw_line(image, 505, 505, x, y, tlb_rgb(255,255,0));
+    }
+    for(y = 5; y &lt;= 505; y+=50){
+        tlb_draw_line(image, 505, 505, x, y, tlb_rgb(255,255,0));
+    }
+    y = 505;
+    for(x = 505; x &gt; 5; x-=50){
+        tlb_draw_line(image, 505, 5, x, y, tlb_rgb(255,255,0));
+    }
+    for(y = 505; y &gt;= 5; y-=50){
+        tlb_draw_line(image, 505, 5, x, y, tlb_rgb(255,255,0));
+    }
+    tlb_save_bmp(image, &quot;out.bmp&quot;);
+    tlb_img_free(image);
+
+    return 0;
+}
+</code></pre>
+
+<h1 id="_2">画三角形</h1>
+<p><del>其实本来我没想写这个，虽然 </del>画三角形其实是一个很常用的操作，但是实现略显麻烦，因此<a style="color:black;background:black;" onmouseover="this.style.cssText='color:white;background:black;'" onmouseout="this.style.cssText='color:black;background:black;'" title="你知道的太多了"><del>，在老余的强烈要求下，</del></a>这里提供了一个<del> 便捷的 </del>画三角形的API</p>
+<pre><code class="C">/* test.c */
+#include &quot;tlibmp.h&quot;
+#include &lt;stddef.h&gt;
+
+int main(void)
+{
+    tlb_image_t * image = NULL;
+
+    /* Create new image */
+    image = tlb_img_new(100,100,tlb_rgb(0,0,0));
+
+    /* Draw a white triangle in this image */
+    tlb_draw_triangle(image,10,10,50,90,90,50,tlb_rgb(255,255,255));
+
+    /* Save Image */
+    tlb_save_bmp(image, &quot;out.bmp&quot;);
+
+    /* Free Object */
+    tlb_img_free(image);
+
+    return 0;
+}
+</code></pre>
+
+<p>运行结果如下：</p>
+<p><img alt="out.bmp" src="../1_1.bmp" /></p>
+<p>bugs:</p>
+<p>已知在clang的O2和O3优化选项下可能会出现无法正确绘图的问题（有可能会报段错误）</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../image_operation/" class="btn btn-neutral float-right" title="基本图像处理">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../pixel/" class="btn btn-neutral" title="像素操作"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../pixel/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../image_operation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>
