@@ -1055,10 +1055,10 @@ int tlb_draw_triangle(\
     int32_t i,j;
     float   k_a;
     float   k_b;
-    int8_t  half_height;
     int32_t x_a;
     int32_t x_b;
     int32_t seg_height;
+    volatile int8_t  half_height = 0;
 
     if (y0==y1 && y0==y2){
         return TLB_ERROR;   

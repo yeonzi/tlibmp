@@ -21,7 +21,7 @@ SOFTWARE.
 #ifndef TLIBMP_H
 #define TLIBMP_H 1
 
-#define TLIBMP_VER "0.0.1"
+#define TLIBMP_VER "0.1.0"
 
 #include <stdint.h>
 
@@ -112,6 +112,7 @@ typedef struct {
 }tlb_core_t;
 
 typedef uint32_t color_t;
+typedef uint8_t* tlb_pixel_t;
 
 #define tlb_rgb(R,G,B)              (color_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16))
 #define tlb_rgba(R,G,B,A)           (color_t)(((uint8_t)R<<0)+((uint8_t)G<<8)+((uint8_t)B<<16)+((uint8_t)A<<24))
@@ -132,7 +133,7 @@ int tlb_print_bmp_info(const char *file_name);
 /* #define tlb_pixel(image, x, y, ch)  ((image->data + 4*(x * image->width + y))[ch]) */
 
 /* get a array of the pixel */
-uint8_t * tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y);
+tlb_pixel_t tlb_pixel(tlb_image_t * image, uint32_t x, uint32_t y);
 
 /* print a pixel with specific color */
 int tlb_pixel_set(tlb_image_t * image, uint32_t x, uint32_t y, color_t color);
