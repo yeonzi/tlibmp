@@ -102,6 +102,8 @@ static const char * get_bmp_comp_string(uint32_t method);
 int convert_from_raw(tlb_image_t * image, uint32_t depth);
 uint8_t * convert_to_raw(tlb_image_t * image, uint32_t depth, uint32_t * size);
 
+#define NULL_POINTER_WARN_UTF  fprintf(stderr, "%s(): \344\274\240\345\205\245\344\270\200\344\270\252\347\251\272\346\214\207\351\222\210\344\275\240\124\115\104\345\234\250\351\200\227\346\210\221\357\274\237\n",__FUNCTION__)
+
 tlb_image_t * tlb_load_bmp(const char *file_name)
 {
     /* image struct */
